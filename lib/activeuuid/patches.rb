@@ -127,8 +127,8 @@ module ActiveUUID
           super
         end
 
-        def native_database_types_with_uuid
-          @native_database_types ||= native_database_types_without_uuid.merge(uuid: { name: 'binary', limit: 16 })
+        def native_database_types
+          super.merge(uuid: { name: 'binary', limit: 16 })
         end
       end
     end
@@ -149,8 +149,8 @@ module ActiveUUID
           super
         end
 
-        def native_database_types_with_pguuid
-          @native_database_types ||= native_database_types_without_pguuid.merge(uuid: { name: 'uuid' })
+        def native_database_types
+          super.merge(uuid: { name: 'uuid' })
         end
       end
     end
