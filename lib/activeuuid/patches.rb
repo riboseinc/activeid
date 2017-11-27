@@ -53,17 +53,17 @@ module ActiveUUID
       extend ActiveSupport::Concern
 
       def self.prepended(klass)
-        def type_cast_with_uuid(value)
+        def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
         end
 
-        def type_cast_code_with_uuid(var_name)
+        def type_cast_code(var_name)
           return "UUIDTools::UUID.serialize(#{var_name})" if type == :uuid
           super
         end
 
-        def simplified_type_with_uuid(field_type)
+        def simplified_type(field_type)
           return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
           super
         end
@@ -100,13 +100,13 @@ module ActiveUUID
       extend ActiveSupport::Concern
 
       def self.prepended(klass)
-        def type_cast_with_uuid(value)
+        def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
         end
         alias_method_chain :type_cast, :uuid if ActiveRecord::VERSION::MAJOR >= 4
 
-        def simplified_type_with_pguuid(field_type)
+        def simplified_type(field_type)
           return :uuid if field_type == 'uuid'
           super
         end
@@ -117,7 +117,7 @@ module ActiveUUID
       extend ActiveSupport::Concern
 
       def self.prepended(klass)
-        def quote_with_visiting(value, column = nil)
+        def quote(value, column = nil)
           value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
           case method(__method__).super_method.arity
           when 1 then super(value)
@@ -125,7 +125,7 @@ module ActiveUUID
           end
         end
 
-        def type_cast_with_visiting(value, column = nil)
+        def type_cast(value, column = nil)
           value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
           super
         end
@@ -140,13 +140,13 @@ module ActiveUUID
       extend ActiveSupport::Concern
 
       def self.prepended(klass)
-        def quote_with_visiting(value, column = nil)
+        def quote(value, column = nil)
           value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
           value = value.to_s if value.is_a? UUIDTools::UUID
           super
         end
 
-        def type_cast_with_visiting(value, column = nil, *args)
+        def type_cast(value, column = nil, *args)
           value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
           value = value.to_s if value.is_a? UUIDTools::UUID
           super
