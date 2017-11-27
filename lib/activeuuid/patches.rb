@@ -119,7 +119,10 @@ module ActiveUUID
       def self.prepended(klass)
         def quote_with_visiting(value, column = nil)
           value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
-          super
+          case method(__method__).super_method.arity
+          when 1 then super(value)
+          else super
+          end
         end
 
         def type_cast_with_visiting(value, column = nil)
