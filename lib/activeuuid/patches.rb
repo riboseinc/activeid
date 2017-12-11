@@ -2,7 +2,7 @@ require 'active_record'
 require 'active_support/concern'
 
 if (ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2) ||
-  (ActiveRecord::VERSION::MAJOR == 5 && ActiveRecord::VERSION::MINOR == 0)
+  (ActiveRecord::VERSION::MAJOR == 5)
   module ActiveRecord
     module Type
       class UUID < Binary # :nodoc:
@@ -43,7 +43,10 @@ module ActiveUUID
       def uuid(*column_names)
         options = column_names.extract_options!
         column_names.each do |name|
+          puts "what is ActiveRecord::Base.connection.adapter_name.downcase????"
+          pp ActiveRecord::Base.connection.adapter_name.downcase
           type = ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql' ? 'uuid' : 'binary(16)'
+          puts "so migration type is #{type}"
           column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
         end
       end
@@ -199,14 +202,14 @@ module ActiveUUID
           ActiveRecord::ConnectionAdapters::Mysql2Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
           ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
         else
-          ActiveRecord::ConnectionAdapters::Column.send :include, Column
-          ActiveRecord::ConnectionAdapters::PostgreSQLColumn.send :include, PostgreSQLColumn if defined? ActiveRecord::ConnectionAdapters::PostgreSQLColumn
+          ActiveRecord::ConnectionAdapters::Column.send :prepend, Column
+          ActiveRecord::ConnectionAdapters::PostgreSQLColumn.send :prepend, PostgreSQLColumn if defined? ActiveRecord::ConnectionAdapters::PostgreSQLColumn
         end
 
-        ActiveRecord::ConnectionAdapters::MysqlAdapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::MysqlAdapter
-        ActiveRecord::ConnectionAdapters::Mysql2Adapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        ActiveRecord::ConnectionAdapters::SQLite3Adapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
-        ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.send :include, PostgreSQLQuoting if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+        ActiveRecord::ConnectionAdapters::MysqlAdapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::MysqlAdapter
+        ActiveRecord::ConnectionAdapters::Mysql2Adapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
+        ActiveRecord::ConnectionAdapters::SQLite3Adapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
+        ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
       end
     end
 

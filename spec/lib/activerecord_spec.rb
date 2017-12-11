@@ -113,6 +113,11 @@ describe UuidArticle do
   let(:model) { UuidArticle }
   subject { model }
 
+  before do
+    puts "article is #{article.pretty_inspect}"
+    puts "article id is #{article.id.pretty_inspect}"
+  end
+
   context 'model' do
     its(:primary_key) { should == 'id' }
     its(:all) { should == [article] }

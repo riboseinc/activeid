@@ -160,7 +160,9 @@ module ActiveUUID
 
     def generate_uuids_if_needed
       primary_key = self.class.primary_key
+      puts "generate_uuids_if_needed?, pk is =#{primary_key}, type is #{self.class.columns_hash[primary_key].type}"
       if self.class.columns_hash[primary_key].type == :uuid
+        puts "generate_uuids_if_needed?, type is :uuid!"
         send("#{primary_key}=", create_uuid) unless send("#{primary_key}?")
       end
     end
