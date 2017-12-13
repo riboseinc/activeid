@@ -182,8 +182,8 @@ module ActiveUUID
     end
 
     module MysqlTypeToSqlOverride
-      def type_to_sql(type, limit = nil, precision = nil, scale = nil, unsigned = nil)
-        type.to_s == 'uuid' ? 'binary(16)' : super
+      def type_to_sql(*args)
+        args.first.to_s == 'uuid' ? 'binary(16)' : super
       end
     end
 
