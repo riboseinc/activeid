@@ -194,7 +194,7 @@ module ActiveUUID
         ActiveRecord::ConnectionAdapters::Table.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::Table
         ActiveRecord::ConnectionAdapters::TableDefinition.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::TableDefinition
 
-        if ActiveRecord::VERSION::MAJOR == 5 && (ActiveRecord::VERSION::MINOR == 0 || ActiveRecord::VERSION::MINOR == 1)
+        if ActiveRecord::VERSION::MAJOR >= 5
           if defined? ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
             ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend TypeMapOverride
             ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend MysqlTypeToSqlOverride
