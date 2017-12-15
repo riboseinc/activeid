@@ -16,11 +16,6 @@ module UUIDTools
       self.class.random_create
     end
 
-    def quoted_id
-      s = raw.unpack("H*")[0]
-      "x'#{s}'"
-    end
-
     def as_json(options = nil)
       to_s
     end
