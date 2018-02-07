@@ -1,8 +1,8 @@
-require 'active_record'
-require 'active_support/concern'
+require "active_record"
+require "active_support/concern"
 
 if (ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2) ||
-  (ActiveRecord::VERSION::MAJOR == 5)
+    (ActiveRecord::VERSION::MAJOR == 5)
   module ActiveRecord
     module Type
       class UUID < Binary # :nodoc:
@@ -49,7 +49,7 @@ module ActiveUUID
         column_names.each do |name|
           puts "what is ActiveRecord::Base.connection.adapter_name.downcase????"
           pp ActiveRecord::Base.connection.adapter_name.downcase
-          type = ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql' ? 'uuid' : 'binary(16)'
+          type = ActiveRecord::Base.connection.adapter_name.casecmp("postgresql").zero? ? "uuid" : "binary(16)"
           puts "so migration type is #{type}"
           column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
         end
@@ -59,7 +59,7 @@ module ActiveUUID
     module Column
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
+      def self.prepended(_klass)
         def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
@@ -71,7 +71,7 @@ module ActiveUUID
         end
 
         def simplified_type(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+          return :uuid if field_type == "binary(16)" || field_type == "binary(16,0)"
           super
         end
       end
@@ -96,17 +96,16 @@ module ActiveUUID
         alias_method :original_simplified_type, :simplified_type
 
         def simplified_type(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+          return :uuid if field_type == "binary(16)" || field_type == "binary(16,0)"
           original_simplified_type(field_type)
         end
       end
     end
 
-
     module PostgreSQLColumn
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
+      def self.prepended(_klass)
         def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
@@ -114,7 +113,7 @@ module ActiveUUID
         alias_method_chain :type_cast, :uuid if ActiveRecord::VERSION::MAJOR >= 4
 
         def simplified_type(field_type)
-          return :uuid if field_type == 'uuid'
+          return :uuid if field_type == "uuid"
           super
         end
       end
@@ -123,9 +122,9 @@ module ActiveUUID
     module Quoting
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
+      def self.prepended(_klass)
         def quote(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           case method(__method__).super_method.arity
           when 1 then super(value)
           else super
@@ -133,12 +132,12 @@ module ActiveUUID
         end
 
         def type_cast(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           super
         end
 
         def native_database_types
-          super.merge(uuid: { name: 'binary', limit: 16 })
+          super.merge(uuid: { name: "binary", limit: 16 })
         end
       end
     end
@@ -146,21 +145,21 @@ module ActiveUUID
     module PostgreSQLQuoting
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
+      def self.prepended(_klass)
         def quote(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           value = value.to_s if value.is_a? UUIDTools::UUID
           super
         end
 
         def type_cast(value, column = nil, *args)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           value = value.to_s if value.is_a? UUIDTools::UUID
           super
         end
 
         def native_database_types
-          super.merge(uuid: { name: 'uuid' })
+          super.merge(uuid: { name: "uuid" })
         end
       end
     end
@@ -183,7 +182,7 @@ module ActiveUUID
 
     module MysqlTypeToSqlOverride
       def type_to_sql(*args)
-        args.first.to_s == 'uuid' ? 'binary(16)' : super
+        args.first.to_s == "uuid" ? "binary(16)" : super
       end
     end
 

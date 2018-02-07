@@ -1,19 +1,19 @@
-require 'rubygems'
-require 'bundler/setup'
+require "rubygems"
+require "bundler/setup"
 
 Bundler.require :development
 
-require 'active_record'
-require 'active_support/all'
+require "active_record"
+require "active_support/all"
 
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-ActiveRecord::Base.configurations = YAML::load(File.read(File.dirname(__FILE__) + "/support/database.yml"))
+ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.dirname(__FILE__) + "/support/database.yml"))
 
-require 'activeuuid'
+require "activeuuid"
 
 ActiveRecord::Base.establish_connection((ENV["DB"] || "sqlite3").to_sym)
 
-if ENV['DB'] == 'mysql'
+if ENV["DB"] == "mysql"
   if ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR <= 1
     class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
       NATIVE_DATABASE_TYPES[:primary_key] = "int(11) auto_increment PRIMARY KEY"
@@ -34,7 +34,7 @@ Dir["#{File.dirname(__FILE__)}/fabricators/**/*.rb"].each { |f| require f }
 RSpec.configure do |config|
   # Remove this line if you don't want RSpec's should and should_not
   # methods or matchers
-  require 'rspec/expectations'
+  require "rspec/expectations"
   config.include RSpec::Matchers
 
   # == Mock Framework
@@ -53,8 +53,8 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  def spec_for_adapter(&block)
-    switcher = ActiveUUID::SpecSupport::SpecForAdapter.new()
+  def spec_for_adapter
+    switcher = ActiveUUID::SpecSupport::SpecForAdapter.new
     yield switcher
     switcher.run(connection)
   end
