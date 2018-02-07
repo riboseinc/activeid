@@ -191,29 +191,33 @@ module ActiveUUID
       def establish_connection(_ = nil)
         super
 
-        ActiveRecord::ConnectionAdapters::Table.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::Table
-        ActiveRecord::ConnectionAdapters::TableDefinition.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::TableDefinition
+        aca = ActiveRecord::ConnectionAdapters
+
+        aca::Table.send           :include, Migrations if defined? aca::Table
+        aca::TableDefinition.send :include, Migrations if defined? aca::TableDefinition
 
         if ActiveRecord::VERSION::MAJOR >= 5
-          if defined? ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
-            ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend TypeMapOverride
-            ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend MysqlTypeToSqlOverride
+          if defined? aca::AbstractMysqlAdapter
+            aca::AbstractMysqlAdapter.prepend TypeMapOverride
+            aca::AbstractMysqlAdapter.prepend MysqlTypeToSqlOverride
           end
 
-          ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
-          ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Uuid.prepend PostgresqlTypeOverride if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+          aca::SQLite3Adapter.prepend        TypeMapOverride        if defined? aca::SQLite3Adapter
+          aca::PostgreSQL::OID::Uuid.prepend PostgresqlTypeOverride if defined? aca::PostgreSQLAdapter
+
         elsif ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2
-          ActiveRecord::ConnectionAdapters::Mysql2Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
-          ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
+          aca::Mysql2Adapter.prepend  TypeMapOverride if defined? aca::Mysql2Adapter
+          aca::SQLite3Adapter.prepend TypeMapOverride if defined? aca::SQLite3Adapter
+
         else
-          ActiveRecord::ConnectionAdapters::Column.send :prepend, Column
-          ActiveRecord::ConnectionAdapters::PostgreSQLColumn.send :prepend, PostgreSQLColumn if defined? ActiveRecord::ConnectionAdapters::PostgreSQLColumn
+          aca::Column.send           :prepend, Column
+          aca::PostgreSQLColumn.send :prepend, PostgreSQLColumn if defined? aca::PostgreSQLColumn
         end
 
-        ActiveRecord::ConnectionAdapters::MysqlAdapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::MysqlAdapter
-        ActiveRecord::ConnectionAdapters::Mysql2Adapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        ActiveRecord::ConnectionAdapters::SQLite3Adapter.send :prepend, Quoting if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
-        ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+        aca::MysqlAdapter.send      :prepend, Quoting           if defined? aca::MysqlAdapter
+        aca::Mysql2Adapter.send     :prepend, Quoting           if defined? aca::Mysql2Adapter
+        aca::SQLite3Adapter.send    :prepend, Quoting           if defined? aca::SQLite3Adapter
+        aca::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? aca::PostgreSQLAdapter
       end
     end
 
