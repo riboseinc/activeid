@@ -1,3 +1,4 @@
+require "pg" if ENV["DB"] == "postgresql"
 require "activeuuid/version"
 require "activeuuid/patches"
 require "activeuuid/uuid"
