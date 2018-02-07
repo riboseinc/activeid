@@ -139,7 +139,7 @@ describe UuidArticle do
   end
 
   context '.find' do
-    specify { model.find(article).should == article }
+    specify { model.find(article.id).should == article }
     specify { model.find(id).should == article }
     specify { model.find(id.to_s).should == article }
     specify { model.find(id.raw).should == article }
