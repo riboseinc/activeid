@@ -125,13 +125,10 @@ module ActiveUUID
 
       def self.prepended(klass)
         def quote(value, column = nil)
-          if value.is_a?(UUIDTools::UUID) || (column && column.type == :uuid)
-            "x'#{value.raw.unpack("H*")[0]}'"
-          else
-            case method(__method__).super_method.arity
-            when 1 then super(value)
-            else super
-            end
+          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+          case method(__method__).super_method.arity
+          when 1 then super(value)
+          else super
           end
         end
 
