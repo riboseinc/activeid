@@ -19,12 +19,12 @@ describe UUIDTools::UUID do
     subject { described_class }
     let(:raw) { uuid.raw }
 
-    specify { subject.serialize(uuid).should == uuid }
-    specify { subject.serialize(input).should == uuid }
-    specify { subject.serialize(hex).should == uuid }
-    specify { subject.serialize(raw).should == uuid }
-    specify { subject.serialize(nil).should be_nil }
-    specify { subject.serialize('').should be_nil }
-    specify { subject.serialize(5).should be_nil }
+    specify { expect(subject.serialize(uuid)).to eq(uuid) }
+    specify { expect(subject.serialize(input)).to eq(uuid) }
+    specify { expect(subject.serialize(hex)).to eq(uuid) }
+    specify { expect(subject.serialize(raw)).to eq(uuid) }
+    specify { expect(subject.serialize(nil)).to be_nil }
+    specify { expect(subject.serialize('')).to be_nil }
+    specify { expect(subject.serialize(5)).to be_nil }
   end
 end

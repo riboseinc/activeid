@@ -20,7 +20,7 @@ describe ActiveRecord::Base do
       connection.drop_table table_name
     end
 
-    specify { table_exists?(connection, table_name).should be_truthy }
+    specify { expect(table_exists?(connection, table_name)).to be_truthy }
 
     context '#add_column' do
       let(:column_name) { :uuid_column }
@@ -28,14 +28,14 @@ describe ActiveRecord::Base do
 
       before { connection.add_column table_name, column_name, :uuid }
 
-      specify { connection.column_exists?(table_name, column_name).should be_truthy }
-      specify { column.should_not be_nil }
+      specify { expect(connection.column_exists?(table_name, column_name)).to be_truthy }
+      specify { expect(column).not_to be_nil }
 
       it 'should have proper sql type' do
         spec_for_adapter do |adapters|
-          adapters.sqlite3 { column.sql_type.should == 'binary(16)' }
-          adapters.mysql2 { column.sql_type.should == 'binary(16)' }
-          adapters.postgresql { column.sql_type.should == 'uuid' }
+          adapters.sqlite3 { expect(column.sql_type).to eq('binary(16)') }
+          adapters.mysql2 { expect(column.sql_type).to eq('binary(16)') }
+          adapters.postgresql { expect(column.sql_type).to eq('uuid') }
         end
       end
     end
@@ -54,8 +54,8 @@ describe ActiveRecord::Base do
 
       it 'support changing type from string to uuid' do
         spec_for_adapter do |adapters|
-          adapters.sqlite3 { column.sql_type.should == 'binary(16)' }
-          adapters.mysql2 { column.sql_type.should == 'binary(16)' }
+          adapters.sqlite3 { expect(column.sql_type).to eq('binary(16)') }
+          adapters.mysql2 { expect(column.sql_type).to eq('binary(16)') }
           adapters.postgresql { skip('postgresql can`t change column type to uuid') }
         end
       end
@@ -81,11 +81,11 @@ describe Article do
   end
 
   context '.find' do
-    specify { model.find(id).should == article }
+    specify { expect(model.find(id)).to eq(article) }
   end
 
   context '.where' do
-    specify { model.where(id: id).first.should == article }
+    specify { expect(model.where(id: id).first).to eq(article) }
   end
 
   context '#destroy' do
@@ -130,21 +130,21 @@ describe UuidArticle do
 
   context 'batch interpolation' do
     before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: article.id]) }
-    specify { article.reload.title.should == 'Passed' }
+    specify { expect(article.reload.title).to eq('Passed') }
   end
 
   context '.find' do
-    specify { model.find(article.id).should == article }
-    specify { model.find(id).should == article }
-    specify { model.find(id.to_s).should == article }
-    specify { model.find(id.raw).should == article }
+    specify { expect(model.find(article.id)).to eq(article) }
+    specify { expect(model.find(id)).to eq(article) }
+    specify { expect(model.find(id.to_s)).to eq(article) }
+    specify { expect(model.find(id.raw)).to eq(article) }
   end
 
   context '.where' do
-    specify { model.where(id: article).first.should == article }
-    specify { model.where(id: id).first.should == article }
-    specify { model.where(id: id.to_s).first.should == article }
-    specify { model.where(id: id.raw).first.should == article }
+    specify { expect(model.where(id: article).first).to eq(article) }
+    specify { expect(model.where(id: id).first).to eq(article) }
+    specify { expect(model.where(id: id.to_s).first).to eq(article) }
+    specify { expect(model.where(id: id.raw).first).to eq(article) }
   end
 
   context '#destroy' do
@@ -156,7 +156,7 @@ describe UuidArticle do
   context '#reload' do
     subject { article }
     its(:'reload.id') { should == id }
-    specify { subject.reload(:select => :another_uuid).id.should == id }
+    specify { expect(subject.reload(:select => :another_uuid).id).to eq(id) }
   end
 
   context 'columns' do
@@ -174,30 +174,30 @@ describe UuidArticle do
     context 'primary' do
       before { article.id = string }
       specify do
-        article.id.should == uuid
-        article.id_before_type_cast.should == string
+        expect(article.id).to eq(uuid)
+        expect(article.id_before_type_cast).to eq(string)
       end
       specify do
-        article.id_before_type_cast.should == string
-        article.id.should == uuid
+        expect(article.id_before_type_cast).to eq(string)
+        expect(article.id).to eq(uuid)
       end
     end
 
     context 'non-primary' do
       before { article.another_uuid = string }
       specify do
-        article.another_uuid.should == uuid
-        article.another_uuid_before_type_cast.should == string
+        expect(article.another_uuid).to eq(uuid)
+        expect(article.another_uuid_before_type_cast).to eq(string)
       end
       specify do
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+        expect(article.another_uuid_before_type_cast).to eq(string)
+        expect(article.another_uuid).to eq(uuid)
       end
       specify do
         article.save
         article.reload
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+        expect(article.another_uuid_before_type_cast).to eq(string)
+        expect(article.another_uuid).to eq(uuid)
       end
     end
   end
