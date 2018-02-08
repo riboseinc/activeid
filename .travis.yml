@@ -23,6 +23,7 @@ env:
 
 matrix:
   allow_failures:
+    - env: DB=postgresql
     - gemfile: gemfiles/Gemfile.rails-head
     - rvm: jruby-9.1.15.0
       gemfile: Gemfile

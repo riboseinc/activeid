@@ -11,8 +11,6 @@ ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.dirname(__FIL
 
 require "activeuuid"
 
-require "pg" if ENV["DB"] == "postgresql"
-
 ActiveRecord::Base.establish_connection((ENV["DB"] || "sqlite3").to_sym)
 
 if ENV["DB"] == "mysql"
