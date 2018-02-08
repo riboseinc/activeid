@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/riboseinc/activeuuid.svg?branch=master)](https://travis-ci.org/riboseinc/activeuuid)
-[![Code Climate Quality](https://codeclimate.com/github/riboseinc/oss.ribose.com/badges/gpa.svg)](https://codeclimate.com/github/riboseinc/oss.ribose.com)
-[![Code Climate Coverage](https://codeclimate.com/github/riboseinc/oss.ribose.com/badges/coverage.svg)](https://codeclimate.com/github/riboseinc/oss.ribose.com/coverage)
+[![Code Climate Quality](https://codeclimate.com/github/riboseinc/activeuuid/badges/gpa.svg)](https://codeclimate.com/github/riboseinc/activeuuid)
+[![Code Climate Coverage](https://codeclimate.com/github/riboseinc/activeuuid/badges/coverage.svg)](https://codeclimate.com/github/riboseinc/activeuuid/coverage)
 
 # activeuuid
 
