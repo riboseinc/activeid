@@ -1,7 +1,7 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe ActiveRecord::Base do
-  context '.connection' do
+  context ".connection" do
     def table_exists?(connection, table_name)
       connection.respond_to?(:data_source_exists?) ?
         connection.data_source_exists?(table_name) :
@@ -20,27 +20,27 @@ describe ActiveRecord::Base do
       connection.drop_table table_name
     end
 
-    specify { table_exists?(connection, table_name).should be_truthy }
+    specify { expect(table_exists?(connection, table_name)).to be_truthy }
 
-    context '#add_column' do
+    context "#add_column" do
       let(:column_name) { :uuid_column }
       let(:column) { connection.columns(table_name).detect { |c| c.name.to_sym == column_name } }
 
       before { connection.add_column table_name, column_name, :uuid }
 
-      specify { connection.column_exists?(table_name, column_name).should be_truthy }
-      specify { column.should_not be_nil }
+      specify { expect(connection.column_exists?(table_name, column_name)).to be_truthy }
+      specify { expect(column).not_to be_nil }
 
-      it 'should have proper sql type' do
+      it "should have proper sql type" do
         spec_for_adapter do |adapters|
-          adapters.sqlite3 { column.sql_type.should == 'binary(16)' }
-          adapters.mysql2 { column.sql_type.should == 'binary(16)' }
-          adapters.postgresql { column.sql_type.should == 'uuid' }
+          adapters.sqlite3 { expect(column.sql_type).to eq("binary(16)") }
+          adapters.mysql2 { expect(column.sql_type).to eq("binary(16)") }
+          adapters.postgresql { expect(column.sql_type).to eq("uuid") }
         end
       end
     end
 
-    context '#change_column' do
+    context "#change_column" do
       let(:column_name) { :string_col }
       let(:column) { connection.columns(table_name).detect { |c| c.name.to_sym == column_name } }
 
@@ -52,15 +52,14 @@ describe ActiveRecord::Base do
         end
       end
 
-      it 'support changing type from string to uuid' do
+      it "support changing type from string to uuid" do
         spec_for_adapter do |adapters|
-          adapters.sqlite3 { column.sql_type.should == 'binary(16)' }
-          adapters.mysql2 { column.sql_type.should == 'binary(16)' }
-          adapters.postgresql { skip('postgresql can`t change column type to uuid') }
+          adapters.sqlite3 { expect(column.sql_type).to eq("binary(16)") }
+          adapters.mysql2 { expect(column.sql_type).to eq("binary(16)") }
+          adapters.postgresql { skip("postgresql can`t change column type to uuid") }
         end
       end
     end
-
   end
 end
 
@@ -70,39 +69,39 @@ describe Article do
   let(:model) { Article }
   subject { model }
 
-  context 'model' do
+  context "model" do
     its(:all) { should == [article] }
     its(:first) { should == article }
   end
 
-  context 'existance' do
+  context "existance" do
     subject { article }
     its(:id) { should be_a Integer }
   end
 
-  context '.find' do
-    specify { model.find(id).should == article }
+  context ".find" do
+    specify { expect(model.find(id)).to eq(article) }
   end
 
-  context '.where' do
-    specify { model.where(id: id).first.should == article }
+  context ".where" do
+    specify { expect(model.where(id: id).first).to eq(article) }
   end
 
-  context '#destroy' do
+  context "#destroy" do
     subject { article }
     its(:delete) { should be_truthy }
     its(:destroy) { should be_truthy }
   end
 
-  context '#save' do
+  context "#save" do
     subject { article }
     let(:array) { [1, 2, 3] }
-    
+
     its(:save) { should be_truthy }
 
-    context 'when change array field' do
+    context "when change array field" do
       before { article.some_array = array }
-      its(:save) { should be_truthy }      
+      its(:save) { should be_truthy }
     end
   end
 end
@@ -113,54 +112,54 @@ describe UuidArticle do
   let(:model) { UuidArticle }
   subject { model }
 
-  context 'model' do
-    its(:primary_key) { should == 'id' }
+  context "model" do
+    its(:primary_key) { should == "id" }
     its(:all) { should == [article] }
     its(:first) { should == article }
   end
 
-  context 'existance' do
+  context "existance" do
     subject { article }
     its(:id) { should be_a UUIDTools::UUID }
   end
 
-  context 'interpolation' do
+  context "interpolation" do
     specify { model.where("id = :id", id: article.id) }
   end
 
-  context 'batch interpolation' do
+  context "batch interpolation" do
     before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: article.id]) }
-    specify { article.reload.title.should == 'Passed' }
+    specify { expect(article.reload.title).to eq("Passed") }
   end
 
-  context '.find' do
-    specify { model.find(article).should == article }
-    specify { model.find(id).should == article }
-    specify { model.find(id.to_s).should == article }
-    specify { model.find(id.raw).should == article }
+  context ".find" do
+    specify { expect(model.find(article.id)).to eq(article) }
+    specify { expect(model.find(id)).to eq(article) }
+    specify { expect(model.find(id.to_s)).to eq(article) }
+    specify { expect(model.find(id.raw)).to eq(article) }
   end
 
-  context '.where' do
-    specify { model.where(id: article).first.should == article }
-    specify { model.where(id: id).first.should == article }
-    specify { model.where(id: id.to_s).first.should == article }
-    specify { model.where(id: id.raw).first.should == article }
+  context ".where" do
+    specify { expect(model.where(id: article).first).to eq(article) }
+    specify { expect(model.where(id: id).first).to eq(article) }
+    specify { expect(model.where(id: id.to_s).first).to eq(article) }
+    specify { expect(model.where(id: id.raw).first).to eq(article) }
   end
 
-  context '#destroy' do
+  context "#destroy" do
     subject { article }
     its(:delete) { should be_truthy }
     its(:destroy) { should be_truthy }
   end
 
-  context '#reload' do
+  context "#reload" do
     subject { article }
     its(:'reload.id') { should == id }
-    specify { subject.reload(:select => :another_uuid).id.should == id }
+    specify { expect(subject.reload(select: :another_uuid).id).to eq(id) }
   end
 
-  context 'columns' do
-    [:id, :another_uuid].each do |column|
+  context "columns" do
+    %i[id another_uuid].each do |column|
       context column do
         subject { model.columns_hash[column.to_s] }
         its(:type) { should == :uuid }
@@ -168,36 +167,36 @@ describe UuidArticle do
     end
   end
 
-  context 'typecasting' do
+  context "typecasting" do
     let(:uuid) { UUIDTools::UUID.random_create }
     let(:string) { uuid.to_s }
-    context 'primary' do
+    context "primary" do
       before { article.id = string }
       specify do
-        article.id.should == uuid
-        article.id_before_type_cast.should == string
+        expect(article.id).to eq(uuid)
+        expect(article.id_before_type_cast).to eq(string)
       end
       specify do
-        article.id_before_type_cast.should == string
-        article.id.should == uuid
+        expect(article.id_before_type_cast).to eq(string)
+        expect(article.id).to eq(uuid)
       end
     end
 
-    context 'non-primary' do
+    context "non-primary" do
       before { article.another_uuid = string }
       specify do
-        article.another_uuid.should == uuid
-        article.another_uuid_before_type_cast.should == string
+        expect(article.another_uuid).to eq(uuid)
+        expect(article.another_uuid_before_type_cast).to eq(string)
       end
       specify do
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+        expect(article.another_uuid_before_type_cast).to eq(string)
+        expect(article.another_uuid).to eq(uuid)
       end
       specify do
         article.save
         article.reload
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+        expect(article.another_uuid_before_type_cast).to eq(string)
+        expect(article.another_uuid).to eq(uuid)
       end
     end
   end
@@ -208,7 +207,7 @@ describe UuidArticleWithNaturalKey do
   let!(:id) { article.id }
   let!(:uuid) { UUIDTools::UUID.sha1_create(UUIDTools::UUID_OID_NAMESPACE, article.title) }
   subject { article }
-  context 'natural_key' do
+  context "natural_key" do
     its(:id) { should == uuid }
   end
 end
@@ -219,7 +218,7 @@ describe UuidArticleWithNamespace do
   let!(:namespace) { UuidArticleWithNamespace._uuid_namespace }
   let!(:uuid) { UUIDTools::UUID.sha1_create(namespace, article.title) }
   subject { article }
-  context 'natural_key_with_namespace' do
+  context "natural_key_with_namespace" do
     its(:id) { should == uuid }
   end
 end

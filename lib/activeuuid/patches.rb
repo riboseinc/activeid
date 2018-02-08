@@ -1,8 +1,8 @@
-require 'active_record'
-require 'active_support/concern'
+require "active_record"
+require "active_support/concern"
 
 if (ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2) ||
-  (ActiveRecord::VERSION::MAJOR == 5 && ActiveRecord::VERSION::MINOR == 0)
+    (ActiveRecord::VERSION::MAJOR == 5)
   module ActiveRecord
     module Type
       class UUID < Binary # :nodoc:
@@ -17,6 +17,10 @@ if (ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2) ||
 
         def cast_value(value)
           UUIDTools::UUID.serialize(value)
+        end
+
+        def cast(value)
+          cast_value value
         end
       end
     end
@@ -43,7 +47,10 @@ module ActiveUUID
       def uuid(*column_names)
         options = column_names.extract_options!
         column_names.each do |name|
-          type = ActiveRecord::Base.connection.adapter_name.downcase == 'postgresql' ? 'uuid' : 'binary(16)'
+          puts "what is ActiveRecord::Base.connection.adapter_name.downcase????"
+          pp ActiveRecord::Base.connection.adapter_name.downcase
+          type = ActiveRecord::Base.connection.adapter_name.casecmp("postgresql").zero? ? "uuid" : "binary(16)"
+          puts "so migration type is #{type}"
           column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
         end
       end
@@ -52,19 +59,19 @@ module ActiveUUID
     module Column
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
-        def type_cast_with_uuid(value)
+      def self.prepended(_klass)
+        def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
         end
 
-        def type_cast_code_with_uuid(var_name)
+        def type_cast_code(var_name)
           return "UUIDTools::UUID.serialize(#{var_name})" if type == :uuid
           super
         end
 
-        def simplified_type_with_uuid(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+        def simplified_type(field_type)
+          return :uuid if field_type == "binary(16)" || field_type == "binary(16,0)"
           super
         end
       end
@@ -89,25 +96,24 @@ module ActiveUUID
         alias_method :original_simplified_type, :simplified_type
 
         def simplified_type(field_type)
-          return :uuid if field_type == 'binary(16)' || field_type == 'binary(16,0)'
+          return :uuid if field_type == "binary(16)" || field_type == "binary(16,0)"
           original_simplified_type(field_type)
         end
       end
     end
 
-
     module PostgreSQLColumn
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
-        def type_cast_with_uuid(value)
+      def self.prepended(_klass)
+        def type_cast(value)
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
         end
         alias_method_chain :type_cast, :uuid if ActiveRecord::VERSION::MAJOR >= 4
 
-        def simplified_type_with_pguuid(field_type)
-          return :uuid if field_type == 'uuid'
+        def simplified_type(field_type)
+          return :uuid if field_type == "uuid"
           super
         end
       end
@@ -116,19 +122,22 @@ module ActiveUUID
     module Quoting
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
-        def quote_with_visiting(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+      def self.prepended(_klass)
+        def quote(value, column = nil)
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
+          case method(__method__).super_method.arity
+          when 1 then super(value)
+          else super
+          end
+        end
+
+        def type_cast(value, column = nil)
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           super
         end
 
-        def type_cast_with_visiting(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
-          super
-        end
-
-        def native_database_types_with_uuid
-          @native_database_types ||= native_database_types_without_uuid.merge(uuid: { name: 'binary', limit: 16 })
+        def native_database_types
+          super.merge(uuid: { name: "binary", limit: 16 })
         end
       end
     end
@@ -136,21 +145,24 @@ module ActiveUUID
     module PostgreSQLQuoting
       extend ActiveSupport::Concern
 
-      def self.prepended(klass)
-        def quote_with_visiting(value, column = nil)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
+      def self.prepended(_klass)
+        def quote(value, column = nil)
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
+          value = value.to_s if value.is_a? UUIDTools::UUID
+          case method(__method__).super_method.arity
+          when 1 then super(value)
+          else super
+          end
+        end
+
+        def type_cast(value, column = nil, *args)
+          value = UUIDTools::UUID.serialize(value) if column&.type == :uuid
           value = value.to_s if value.is_a? UUIDTools::UUID
           super
         end
 
-        def type_cast_with_visiting(value, column = nil, *args)
-          value = UUIDTools::UUID.serialize(value) if column && column.type == :uuid
-          value = value.to_s if value.is_a? UUIDTools::UUID
-          super
-        end
-
-        def native_database_types_with_pguuid
-          @native_database_types ||= native_database_types_without_pguuid.merge(uuid: { name: 'uuid' })
+        def native_database_types
+          super.merge(uuid: { name: "uuid" })
         end
       end
     end
@@ -172,8 +184,8 @@ module ActiveUUID
     end
 
     module MysqlTypeToSqlOverride
-      def type_to_sql(type, limit = nil, precision = nil, scale = nil, unsigned = nil)
-        type.to_s == 'uuid' ? 'binary(16)' : super
+      def type_to_sql(*args)
+        args.first.to_s == "uuid" ? "binary(16)" : super
       end
     end
 
@@ -181,29 +193,33 @@ module ActiveUUID
       def establish_connection(_ = nil)
         super
 
-        ActiveRecord::ConnectionAdapters::Table.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::Table
-        ActiveRecord::ConnectionAdapters::TableDefinition.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::TableDefinition
+        aca = ActiveRecord::ConnectionAdapters
 
-        if ActiveRecord::VERSION::MAJOR == 5 && ActiveRecord::VERSION::MINOR == 0
-          if defined? ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
-            ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend TypeMapOverride
-            ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter.prepend MysqlTypeToSqlOverride
+        aca::Table.send           :include, Migrations if defined? aca::Table
+        aca::TableDefinition.send :include, Migrations if defined? aca::TableDefinition
+
+        if ActiveRecord::VERSION::MAJOR >= 5
+          if defined? aca::AbstractMysqlAdapter
+            aca::AbstractMysqlAdapter.prepend TypeMapOverride
+            aca::AbstractMysqlAdapter.prepend MysqlTypeToSqlOverride
           end
 
-          ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
-          ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Uuid.prepend PostgresqlTypeOverride if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+          aca::SQLite3Adapter.prepend        TypeMapOverride        if defined? aca::SQLite3Adapter
+          aca::PostgreSQL::OID::Uuid.prepend PostgresqlTypeOverride if defined? aca::PostgreSQLAdapter
+
         elsif ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR == 2
-          ActiveRecord::ConnectionAdapters::Mysql2Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
-          ActiveRecord::ConnectionAdapters::SQLite3Adapter.prepend TypeMapOverride if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
+          aca::Mysql2Adapter.prepend  TypeMapOverride if defined? aca::Mysql2Adapter
+          aca::SQLite3Adapter.prepend TypeMapOverride if defined? aca::SQLite3Adapter
+
         else
-          ActiveRecord::ConnectionAdapters::Column.send :include, Column
-          ActiveRecord::ConnectionAdapters::PostgreSQLColumn.send :include, PostgreSQLColumn if defined? ActiveRecord::ConnectionAdapters::PostgreSQLColumn
+          aca::Column.send           :prepend, Column
+          aca::PostgreSQLColumn.send :prepend, PostgreSQLColumn if defined? aca::PostgreSQLColumn
         end
 
-        ActiveRecord::ConnectionAdapters::MysqlAdapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::MysqlAdapter
-        ActiveRecord::ConnectionAdapters::Mysql2Adapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::Mysql2Adapter
-        ActiveRecord::ConnectionAdapters::SQLite3Adapter.send :include, Quoting if defined? ActiveRecord::ConnectionAdapters::SQLite3Adapter
-        ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.send :include, PostgreSQLQuoting if defined? ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+        aca::MysqlAdapter.send      :prepend, Quoting           if defined? aca::MysqlAdapter
+        aca::Mysql2Adapter.send     :prepend, Quoting           if defined? aca::Mysql2Adapter
+        aca::SQLite3Adapter.send    :prepend, Quoting           if defined? aca::SQLite3Adapter
+        aca::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? aca::PostgreSQLAdapter
       end
     end
 

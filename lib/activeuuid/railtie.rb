@@ -1,5 +1,5 @@
-require 'activeuuid'
-require 'rails'
+require "activeuuid"
+require "rails"
 
 module ActiveUUID
   class Railtie < Rails::Railtie

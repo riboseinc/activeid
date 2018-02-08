@@ -1,4 +1,4 @@
-require 'uuidtools'
+require "uuidtools"
 
 # monkey-patch Friendly::UUID to serialize UUIDs
 module UUIDTools
@@ -6,10 +6,10 @@ module UUIDTools
     alias_method :id, :raw
 
     # duck typing activerecord 3.1 dirty hack )
-    def gsub *; self; end
+    def gsub(*); self; end
 
     def ==(another_uuid)
-      self.to_s == another_uuid.to_s
+      to_s == another_uuid.to_s
     end
 
     def next
@@ -21,7 +21,7 @@ module UUIDTools
       "x'#{s}'"
     end
 
-    def as_json(options = nil)
+    def as_json(_options = nil)
       to_s
     end
 
@@ -35,8 +35,6 @@ module UUIDTools
         value
       when String
         parse_string value
-      else
-        nil
       end
     end
 
@@ -44,10 +42,10 @@ module UUIDTools
       16
     end
 
-  private
+    private
 
     def self.parse_string(str)
-      return nil if str.length == 0
+      return nil if str.empty?
       if str.length == 36
         parse str
       elsif str.length == 32
@@ -62,13 +60,13 @@ end
 module Arel
   module Visitors
     class DepthFirst < Arel::Visitors::Visitor
-      def visit_UUIDTools_UUID(o, a = nil)
+      def visit_UUIDTools_UUID(o, _a = nil)
         o.quoted_id
       end
     end
 
     class MySQL < Arel::Visitors::ToSql
-      def visit_UUIDTools_UUID(o, a = nil)
+      def visit_UUIDTools_UUID(o, _a = nil)
         o.quoted_id
       end
     end
@@ -80,14 +78,14 @@ module Arel
     end
 
     class SQLite < Arel::Visitors::ToSql
-      def visit_UUIDTools_UUID(o, a = nil)
+      def visit_UUIDTools_UUID(o, _a = nil)
         o.quoted_id
       end
     end
 
     class PostgreSQL < Arel::Visitors::ToSql
-      def visit_UUIDTools_UUID(o, a = nil)
-        "'#{o.to_s}'"
+      def visit_UUIDTools_UUID(o, _a = nil)
+        "'#{o}'"
       end
     end
   end
@@ -121,7 +119,7 @@ module ActiveUUID
         self._uuid_generator = generator_name
       end
 
-      def uuids(*attributes)
+      def uuids(*_attributes)
         ActiveSupport::Deprecation.warn <<-EOS
           ActiveUUID detects uuid columns independently.
           There is no more need to use uuid method.
@@ -134,7 +132,7 @@ module ActiveUUID
     end
 
     module Instantiation
-      def instantiate(record, record_models = nil)
+      def instantiate(record, _record_models = nil)
         uuid_columns.each do |uuid_column|
           record[uuid_column] = UUIDTools::UUID.serialize(record[uuid_column]).to_s if record[uuid_column]
         end
@@ -146,7 +144,7 @@ module ActiveUUID
     def create_uuid
       if _natural_key
         # TODO if all the attributes return nil you might want to warn about this
-        chained = _natural_key.map { |attribute| self.send(attribute) }.join('-')
+        chained = _natural_key.map { |attribute| send(attribute) }.join("-")
         UUIDTools::UUID.sha1_create(_uuid_namespace || UUIDTools::UUID_OID_NAMESPACE, chained)
       else
         case _uuid_generator
@@ -164,6 +162,5 @@ module ActiveUUID
         send("#{primary_key}=", create_uuid) unless send("#{primary_key}?")
       end
     end
-
   end
 end

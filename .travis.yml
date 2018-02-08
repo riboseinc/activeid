@@ -3,11 +3,9 @@ before_script:
   - psql -c 'create database activeuuid_test;' -U postgres
 
 rvm:
-  - 2.1.10
-  - 2.2.6
-  - 2.3.3
-  - 2.4.0
-  - jruby-9.1.5.0
+  - 2.3.6
+  - 2.4.3
+  - jruby-9.1.15.0
 
 gemfile:
   - Gemfile
@@ -15,6 +13,7 @@ gemfile:
   - gemfiles/Gemfile.rails-4-1
   - gemfiles/Gemfile.rails-4-2
   - gemfiles/Gemfile.rails-5-0
+  - gemfiles/Gemfile.rails-5-1
   - gemfiles/Gemfile.rails-head
 
 env:
@@ -24,34 +23,31 @@ env:
 
 matrix:
   allow_failures:
+    - env: DB=postgresql
     - gemfile: gemfiles/Gemfile.rails-head
-    - rvm: jruby-9.1.5.0
-      gemfile: gemfiles/Gemfile.rails-4-0
-    - rvm: jruby-9.1.5.0
-      gemfile: gemfiles/Gemfile.rails-4-1
-  exclude:
-    - rvm: 2.1.10
+    - rvm: jruby-9.1.15.0
       gemfile: Gemfile
-    - rvm: 2.2.5
-      gemfile: gemfiles/Gemfile.rails-3-1
-    - rvm: 2.3.1
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Gemfile.rails-4-0
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Gemfile.rails-4-1
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Gemfile.rails-4-2
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Gemfile.rails-5-0
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Gemfile.rails-5-1
+  exclude:
+    - rvm: 2.3.6
       gemfile: gemfiles/Gemfile.rails-3-1
     - rvm: jruby
       gemfile: gemfiles/Gemfile.rails-3-1
       env: DB=postgresql
-    - rvm: 2.2.5
+    - rvm: 2.3.6
       gemfile: gemfiles/Gemfile.rails-3-2
-    - rvm: 2.3.1
-      gemfile: gemfiles/Gemfile.rails-3-2
-    - rvm: 2.1.10
-      gemfile: gemfiles/Gemfile.rails-5-0
-    - rvm: 2.4.0
+    - rvm: 2.4.3
       gemfile: gemfiles/Gemfile.rails-4-0
-    - rvm: 2.4.0
+    - rvm: 2.4.3
       gemfile: gemfiles/Gemfile.rails-4-1
-    - rvm: 2.4.0
+    - rvm: 2.4.3
       gemfile: gemfiles/Gemfile.rails-4-2
-    - rvm: jruby-9.1.5.0
-      gemfile: Gemfile
-    - rvm: jruby-9.1.5.0
-      gemfile: gemfiles/Gemfile.rails-5-0
