@@ -47,10 +47,7 @@ module ActiveUUID
       def uuid(*column_names)
         options = column_names.extract_options!
         column_names.each do |name|
-          puts "what is ActiveRecord::Base.connection.adapter_name.downcase????"
-          pp ActiveRecord::Base.connection.adapter_name.downcase
           type = ActiveRecord::Base.connection.adapter_name.casecmp("postgresql").zero? ? "uuid" : "binary(16)"
-          puts "so migration type is #{type}"
           column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
         end
       end
