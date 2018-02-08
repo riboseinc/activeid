@@ -1,4 +1,4 @@
-require 'activeuuid'
+require "activeuuid"
 
 module ActiveUUID::SpecSupport
   class SpecForAdapter
@@ -6,7 +6,7 @@ module ActiveUUID::SpecSupport
       @specs = {}
     end
 
-    [:sqlite3, :mysql2, :postgresql].each do |name|
+    %i[sqlite3 mysql2 postgresql].each do |name|
       send :define_method, name do |&block|
         @specs[name] = block
       end
@@ -14,7 +14,7 @@ module ActiveUUID::SpecSupport
 
     def run(connection)
       name = connection.adapter_name.downcase.to_sym
-      @specs[name].call() if(@specs.include? name)
+      @specs[name].call if @specs.include? name
     end
   end
 end
