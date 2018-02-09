@@ -6,6 +6,8 @@
 
 Add `binary(16)` UUIDs to ActiveRecord.
 
+Does not work with recently releaded version 1.0 of `pg` gem (yet).
+
 ## Example
 
 ### Create a Migration
