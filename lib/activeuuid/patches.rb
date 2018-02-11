@@ -107,7 +107,6 @@ module ActiveUUID
           return UUIDTools::UUID.serialize(value) if type == :uuid
           super
         end
-        alias_method_chain :type_cast, :uuid if ActiveRecord::VERSION::MAJOR >= 4
 
         def simplified_type(field_type)
           return :uuid if field_type == "uuid"
