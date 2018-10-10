@@ -2,11 +2,12 @@
 # file.
 
 inherit_from:
-  # Thoughtbot's style guide from: https://github.com/thoughtbot/guides
-  - ".rubocop.tb.yml"
+  - https://raw.githubusercontent.com/riboseinc/oss-guides/master/ci/rubocop.yml
+
 AllCops:
   DisplayCopNames: false
   StyleGuideCopsOnly: false
   TargetRubyVersion: 2.4
+
 Rails:
   Enabled: true
