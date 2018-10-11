@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gemspec path: '../'
+gemspec path: "../"
 
-gem 'mysql2', '~> 0.3.21', platforms: [:mri, :rbx]
-gem 'activerecord', '~> 4.1.0'
+gem "activerecord", "~> 4.1.0"
+gem "mysql2", "~> 0.3.21", platforms: %i[mri rbx]

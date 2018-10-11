@@ -1,5 +1,5 @@
 source "http://rubygems.org"
 
-gemspec path: '../'
+gemspec path: "../"
 
-gem 'activerecord', github: 'rails/rails'
+gem "activerecord", github: "rails/rails"
