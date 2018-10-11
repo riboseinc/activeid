@@ -9,12 +9,12 @@ rvm:
 
 gemfile:
   - Gemfile
-  - gemfiles/Gemfile.rails-4-0
-  - gemfiles/Gemfile.rails-4-1
-  - gemfiles/Gemfile.rails-4-2
-  - gemfiles/Gemfile.rails-5-0
-  - gemfiles/Gemfile.rails-5-1
-  - gemfiles/Gemfile.rails-head
+  - gemfiles/Rails-4_0.gemfile
+  - gemfiles/Rails-4_1.gemfile
+  - gemfiles/Rails-4_2.gemfile
+  - gemfiles/Rails-5_0.gemfile
+  - gemfiles/Rails-5_1.gemfile
+  - gemfiles/Rails-head.gemfile
 
 env:
   - DB=sqlite3
@@ -23,30 +23,30 @@ env:
 
 matrix:
   allow_failures:
-    - gemfile: gemfiles/Gemfile.rails-head
+    - gemfile: gemfiles/Rails-head.gemfile
     - rvm: jruby-9.1.15.0
       gemfile: Gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Gemfile.rails-4-0
+      gemfile: gemfiles/Rails-4_0.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Gemfile.rails-4-1
+      gemfile: gemfiles/Rails-4_1.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Gemfile.rails-4-2
+      gemfile: gemfiles/Rails-4_2.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Gemfile.rails-5-0
+      gemfile: gemfiles/Rails-5_0.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Gemfile.rails-5-1
+      gemfile: gemfiles/Rails-5_1.gemfile
   exclude:
     - rvm: 2.3.6
-      gemfile: gemfiles/Gemfile.rails-3-1
+      gemfile: gemfiles/Rails-3_1.gemfile
     - rvm: jruby
-      gemfile: gemfiles/Gemfile.rails-3-1
+      gemfile: gemfiles/Rails-3_1.gemfile
       env: DB=postgresql
     - rvm: 2.3.6
-      gemfile: gemfiles/Gemfile.rails-3-2
+      gemfile: gemfiles/Rails-3_2.gemfile
     - rvm: 2.4.3
-      gemfile: gemfiles/Gemfile.rails-4-0
+      gemfile: gemfiles/Rails-4_0.gemfile
     - rvm: 2.4.3
-      gemfile: gemfiles/Gemfile.rails-4-1
+      gemfile: gemfiles/Rails-4_1.gemfile
     - rvm: 2.4.3
-      gemfile: gemfiles/Gemfile.rails-4-2
+      gemfile: gemfiles/Rails-4_2.gemfile
