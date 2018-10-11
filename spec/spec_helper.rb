@@ -25,7 +25,14 @@ if ENV["DB"] == "mysql"
   end
 end
 
-ActiveRecord::Migrator.migrate(File.dirname(__FILE__) + "/support/migrate")
+migration_paths = File.dirname(__FILE__) + "/support/migrate"
+
+if defined?(ActiveRecord::MigrationContext)
+  ActiveRecord::MigrationContext.new(migration_paths).migrate
+else
+  ActiveRecord::Migrator.migrate(migration_paths)
+end
+
 ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, STDOUT)
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
