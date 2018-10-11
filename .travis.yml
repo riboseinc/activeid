@@ -14,6 +14,7 @@ gemfile:
   - gemfiles/Rails-4_2.gemfile
   - gemfiles/Rails-5_0.gemfile
   - gemfiles/Rails-5_1.gemfile
+  - gemfiles/Rails-5_2.gemfile
   - gemfiles/Rails-head.gemfile
 
 env:
@@ -36,6 +37,8 @@ matrix:
       gemfile: gemfiles/Rails-5_0.gemfile
     - rvm: jruby-9.1.15.0
       gemfile: gemfiles/Rails-5_1.gemfile
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/Rails-5_2.gemfile
   exclude:
     - rvm: 2.3.6
       gemfile: gemfiles/Rails-3_1.gemfile
