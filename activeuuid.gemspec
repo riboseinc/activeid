@@ -35,6 +35,6 @@ Gem::Specification.new do |s|
     s.add_development_dependency "sqlite3"
   end
 
-  s.add_runtime_dependency "activerecord", ">= 4.0"
+  s.add_runtime_dependency "activerecord", ">= 4.0", "< 5.2"
   s.add_runtime_dependency "uuidtools"
 end
