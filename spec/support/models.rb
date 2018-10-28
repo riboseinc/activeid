@@ -3,6 +3,8 @@ end
 
 class UuidArticle < ActiveRecord::Base
   include ActiveUUID::UUID
+  attribute :id, ActiveUUID::AttributeType.new
+  attribute :another_uuid, ActiveUUID::AttributeType.new
 end
 
 class UuidArticleWithNaturalKey < UuidArticle
