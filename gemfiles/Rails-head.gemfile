@@ -3,3 +3,6 @@ source "http://rubygems.org"
 gemspec path: "../"
 
 gem "activerecord", github: "rails/rails"
+
+gem "codecov", require: false, group: :test
+gem "simplecov", require: false, group: :test
