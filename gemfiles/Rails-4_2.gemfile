@@ -2,7 +2,8 @@ source "http://rubygems.org"
 
 gemspec path: "../"
 
-gem "activerecord", "~> 4.2.0"
+gem "activerecord", "~> 4.2.5"
+gem "mysql2", "~> 0.4.0", platforms: %i[mri rbx]
 
 gem "codecov", require: false, group: :test
 gem "simplecov", require: false, group: :test
