@@ -33,9 +33,6 @@ if ENV["DB"] == "mysql"
   end
 end
 
-ActiveRecord::Migrator.migrate(File.dirname(__FILE__) + "/support/migrate")
-ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, STDOUT)
-
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/fabricators/**/*.rb"].each { |f| require f }
 
