@@ -52,46 +52,42 @@ describe UuidArticle do
     specify { expect(subject.reload(select: :another_uuid).id).to eq(id) }
   end
 
-  context "columns" do
-    %i[id another_uuid].each do |column|
-      context column do
-        subject { model.columns_hash[column.to_s] }
-        its(:type) { should == :uuid }
-      end
+  shared_examples "for UUID attribute" do
+    let(:attr_type) { model.attribute_types[attr_name.to_s] }
+    let(:attr_getter) { article.method(attr_name) }
+    let(:attr_setter) { article.method("#{attr_name}=") }
+
+    let(:uuid) { UUIDTools::UUID.random_create }
+
+    it "has proper ActiveRecord type" do
+      expect(attr_type).to be_kind_of(ActiveUUID::AttributeType)
+    end
+
+    it "allows to assign UUID instance" do
+      attr_setter.(uuid)
+      expect(attr_getter.()).to be_an(UUIDTools::UUID) & eq(uuid)
+    end
+
+    it "allows to assign UUID string" do
+      attr_setter.(uuid.to_s)
+      expect(attr_getter.()).to be_an(UUIDTools::UUID) & eq(uuid)
+    end
+
+    it "persists UUID in database" do
+      attr_setter.(uuid)
+      article.save
+      article.reload
+      expect(attr_getter.()).to be_an(UUIDTools::UUID) & eq(uuid)
     end
   end
 
-  context "typecasting" do
-    let(:uuid) { UUIDTools::UUID.random_create }
-    let(:string) { uuid.to_s }
-    context "primary" do
-      before { article.id = string }
-      specify do
-        expect(article.id).to eq(uuid)
-        expect(article.id_before_type_cast).to eq(string)
-      end
-      specify do
-        expect(article.id_before_type_cast).to eq(string)
-        expect(article.id).to eq(uuid)
-      end
-    end
+  describe "UUID attribute which is a model's primary key" do
+    let(:attr_name) { :id }
+    include_examples "for UUID attribute"
+  end
 
-    context "non-primary" do
-      before { article.another_uuid = string }
-      specify do
-        expect(article.another_uuid).to eq(uuid)
-        expect(article.another_uuid_before_type_cast).to eq(string)
-      end
-      specify do
-        expect(article.another_uuid_before_type_cast).to eq(string)
-        expect(article.another_uuid).to eq(uuid)
-      end
-      specify do
-        article.save
-        article.reload
-        expect(article.another_uuid_before_type_cast).to eq(string)
-        expect(article.another_uuid).to eq(uuid)
-      end
-    end
+  describe "UUID attribute which isn't a model's primary key" do
+    let(:attr_name) { :another_uuid }
+    include_examples "for UUID attribute"
   end
 end
