@@ -158,7 +158,8 @@ module ActiveUUID
 
     def generate_uuids_if_needed
       primary_key = self.class.primary_key
-      if self.class.columns_hash[primary_key].type == :uuid
+      primary_key_attribute_type = self.class.type_for_attribute(primary_key)
+      if ::ActiveUUID::AttributeType === primary_key_attribute_type
         send("#{primary_key}=", create_uuid) unless send("#{primary_key}?")
       end
     end
