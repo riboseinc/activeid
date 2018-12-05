@@ -1,64 +1,86 @@
 require "spec_helper"
 
-describe ActiveRecord::Base do
-  context ".connection" do
-    def table_exists?(connection, table_name)
+describe "migration methods" do
+  shared_examples "active record examples" do |can_change_column_to_uuid: true|
+    let(:connection) { ActiveRecord::Base.connection }
+    let(:table_name) { :test_uuid_field_creation }
+    let(:table_columns) { connection.columns(table_name) }
+    let(:column) { table_columns.detect { |c| c.name.to_sym == column_name } }
+
+    def table_exists?(table_name)
       connection.respond_to?(:data_source_exists?) ?
         connection.data_source_exists?(table_name) :
         connection.table_exists?(table_name)
     end
 
-    let!(:connection) { ActiveRecord::Base.connection }
-    let(:table_name) { :test_uuid_field_creation }
-
-    before do
-      connection.drop_table(table_name) if table_exists?(connection, table_name)
+    around do |example|
+      connection.drop_table(table_name) if table_exists?(table_name)
       connection.create_table(table_name)
+      expect(table_exists?(table_name)).to be(true)
+      example.run
+      connection.drop_table(table_name)
     end
 
-    after do
-      connection.drop_table table_name
-    end
-
-    specify { expect(table_exists?(connection, table_name)).to be_truthy }
-
-    context "#add_column" do
+    describe "#add_column" do
       let(:column_name) { :uuid_column }
-      let(:column) { connection.columns(table_name).detect { |c| c.name.to_sym == column_name } }
 
-      before { connection.add_column table_name, column_name, :uuid }
+      def perform
+        connection.add_column(table_name, column_name, :uuid)
+      end
 
-      specify { expect(connection.column_exists?(table_name, column_name)).to be_truthy }
-      specify { expect(column).not_to be_nil }
-
-      it "should have proper sql type" do
-        spec_for_adapter do |adapters|
-          adapters.sqlite3 { expect(column.sql_type).to eq("binary(16)") }
-          adapters.mysql2 { expect(column.sql_type).to eq("binary(16)") }
-          adapters.postgresql { expect(column.sql_type).to eq("uuid") }
-        end
+      it "adds a column of correct SQL type to the table" do
+        perform
+        expect(connection.column_exists?(table_name, column_name)).to be(true)
+        expect(column.sql_type).to eq(sql_type_for_uuid)
       end
     end
 
-    context "#change_column" do
+    describe "#change_column" do
       let(:column_name) { :string_col }
-      let(:column) { connection.columns(table_name).detect { |c| c.name.to_sym == column_name } }
 
       before do
-        connection.add_column table_name, column_name, :string
-        spec_for_adapter do |adapters|
-          adapters.sqlite3 { connection.change_column table_name, column_name, :uuid }
-          adapters.mysql2 { connection.change_column table_name, column_name, :uuid }
-        end
+        connection.add_column(table_name, column_name, :string)
       end
 
-      it "support changing type from string to uuid" do
-        spec_for_adapter do |adapters|
-          adapters.sqlite3 { expect(column.sql_type).to eq("binary(16)") }
-          adapters.mysql2 { expect(column.sql_type).to eq("binary(16)") }
-          adapters.postgresql { skip("postgresql can`t change column type to uuid") }
+      def perform
+        connection.change_column(table_name, column_name, :uuid)
+      end
+
+      if can_change_column_to_uuid
+        it "changes column type to a proper one for UUID storage" do
+          perform
+          expect(column.sql_type).to eq(sql_type_for_uuid)
+        end
+      else
+        it "raises exception when attempting to change the column type " +
+          "to one proper for UUID storage" do
+          expect { perform }.to raise_exception(ActiveRecord::StatementInvalid)
         end
       end
     end
+  end
+
+  context "with SQLite3 backend" do
+    before { skip "backend unavailable" unless ENV["DB"] == "sqlite3" }
+
+    let(:sql_type_for_uuid) { "binary(16)" }
+
+    include_examples "active record examples"
+  end
+
+  context "with MySQL backend" do
+    before { skip "backend unavailable" unless ENV["DB"] == "mysql" }
+
+    let(:sql_type_for_uuid) { "binary(16)" }
+
+    include_examples "active record examples"
+  end
+
+  context "with PostgreSQL backend" do
+    before { skip "backend unavailable" unless ENV["DB"] == "postgresql" }
+
+    let(:sql_type_for_uuid) { "uuid" }
+
+    include_examples "active record examples", can_change_column_to_uuid: false
   end
 end
