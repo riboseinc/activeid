@@ -37,13 +37,6 @@ matrix:
     - rvm: jruby-9.1.15.0
       gemfile: gemfiles/Rails-5_1.gemfile
   exclude:
-    - rvm: 2.3.6
-      gemfile: gemfiles/Rails-3_1.gemfile
-    - rvm: jruby
-      gemfile: gemfiles/Rails-3_1.gemfile
-      env: DB=postgresql
-    - rvm: 2.3.6
-      gemfile: gemfiles/Rails-3_2.gemfile
     - rvm: 2.4.3
       gemfile: gemfiles/Rails-4_0.gemfile
     - rvm: 2.4.3
