@@ -111,7 +111,7 @@ module ActiveUUID
       end
 
       def uuid_namespace(namespace)
-        namespace = UUIDTools::UUID.parse_string(namespace) unless namespace.is_a? UUIDTools::UUID
+        namespace = Utils.cast_to_uuid(namespace)
         self._uuid_namespace = namespace
       end
 
