@@ -69,4 +69,29 @@ RSpec.describe ActiveUUID::Utils do
       expect { subject.([hex_with_dashes]) }.to raise_error(ArgumentError)
     end
   end
+
+  describe "#quote_as_binary" do
+    subject { described_class.method(:quote_as_binary) }
+
+    it "returns nil for nil" do
+      expect(subject.(nil)).to be(nil)
+    end
+
+    it "returns binary data for UUID instance" do
+      expect(subject.(uuid)).to be_a_binary_data_containing_uuid
+    end
+
+    it "returns binary data for UUID string" do
+      expect(subject.(hex_with_dashes)).to be_a_binary_data_containing_uuid
+      expect(subject.(hex_without_dashes)).to be_a_binary_data_containing_uuid
+    end
+
+    it "is also available (delegates) in ActiveUUID top-level module" do
+      expect(ActiveUUID).to respond_to(:quote_as_binary)
+    end
+
+    def be_a_binary_data_containing_uuid
+      be_a(::ActiveRecord::Type::Binary::Data) & eq(binary_string)
+    end
+  end
 end
