@@ -17,6 +17,11 @@ module ActiveUUID
       end
     end
 
+    def quote_as_binary(value)
+      uuid = cast_to_uuid(value)
+      uuid && ::ActiveRecord::Type::Binary::Data.new(uuid.raw)
+    end
+
     # Unfortunately, UUIDTools is missing some validations, hence we have to do
     # them here.
     #
