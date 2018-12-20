@@ -18,11 +18,11 @@ describe UuidArticle do
   end
 
   context "interpolation" do
-    specify { model.where("id = :id", id: article.id) }
+    specify { model.where("id = :id", id: ActiveUUID.quote_as_binary(article.id)) }
   end
 
   context "batch interpolation" do
-    before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: article.id]) }
+    before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: ActiveUUID.quote_as_binary(article.id)]) }
     specify { expect(article.reload.title).to eq("Passed") }
   end
 
