@@ -36,7 +36,6 @@ if ENV["DB"] == "mysql"
 end
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
-Dir["#{File.dirname(__FILE__)}/fabricators/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
   # Remove this line if you don't want RSpec's should and should_not
