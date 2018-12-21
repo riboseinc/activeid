@@ -1,4 +1,4 @@
-# All project-specific additions and overrides should be specified in this 
+# All project-specific additions and overrides should be specified in this
 # file.
 
 inherit_from:
@@ -11,3 +11,8 @@ AllCops:
 
 Rails:
   Enabled: true
+
+# It's not a typical Rails application.  There is no value in introducing
+# the ApplicationRecord class.
+Rails/ApplicationRecord:
+  Enabled: false
