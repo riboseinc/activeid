@@ -1,19 +1,13 @@
-Fabricator(:article) do
-  title { Forgery::LoremIpsum.word }
-  body { Forgery::LoremIpsum.sentence }
-end
+fab_names = %i[
+  article
+  uuid_article
+  uuid_article_with_namespace
+  uuid_article_with_natural_key
+]
 
-Fabricator(:uuid_article) do
-  title { Forgery::LoremIpsum.word }
-  body { Forgery::LoremIpsum.sentence }
-end
-
-Fabricator(:uuid_article_with_namespace) do
-  title { Forgery::LoremIpsum.word }
-  body { Forgery::LoremIpsum.sentence }
-end
-
-Fabricator(:uuid_article_with_natural_key) do
-  title { Forgery::LoremIpsum.word }
-  body { Forgery::LoremIpsum.sentence }
+fab_names.each do |fab_name|
+  Fabricator(fab_name) do
+    title { Forgery::LoremIpsum.word }
+    body { Forgery::LoremIpsum.sentence }
+  end
 end
