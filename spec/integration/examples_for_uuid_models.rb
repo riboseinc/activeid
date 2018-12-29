@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe UuidArticle do
-  let!(:article) { Fabricate :uuid_article }
+shared_examples "model with UUIDs" do
+  let!(:article) { Fabricate model.name.underscore }
   let!(:id) { article.id }
   let(:model) { UuidArticle }
   subject { model }
@@ -18,11 +18,11 @@ describe UuidArticle do
   end
 
   context "interpolation" do
-    specify { model.where("id = :id", id: ActiveUUID.quote_as_binary(article.id)) }
+    specify { model.where("id = :id", id: quoted_article_id) }
   end
 
   context "batch interpolation" do
-    before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: ActiveUUID.quote_as_binary(article.id)]) }
+    before { model.update_all(["title = CASE WHEN id = :id THEN 'Passed' ELSE 'Nothing' END", id: quoted_article_id]) }
     specify { expect(article.reload.title).to eq("Passed") }
   end
 
