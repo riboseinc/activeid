@@ -14,12 +14,13 @@ end
 # - NativeUuidArticleWithNamespace
 %w[binary string native].each do |table_prefix|
   table_name = "#{table_prefix}_uuid_articles"
+  storage_mode = table_prefix == "binary" ? :binary : :string
 
   regular_class = Class.new(ActiveRecord::Base) do
     include ActiveUUID::Model
     self.table_name = table_name
-    attribute :id, ActiveUUID::AttributeType.new
-    attribute :another_uuid, ActiveUUID::AttributeType.new
+    attribute :id, ActiveUUID::AttributeType.new(storage_mode)
+    attribute :another_uuid, ActiveUUID::AttributeType.new(storage_mode)
   end
 
   natural_key_class = Class.new(regular_class) do

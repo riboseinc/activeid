@@ -8,26 +8,52 @@ describe ActiveUUID::AttributeType do
   let(:hex_without_dashes) { hex_with_dashes.delete("-").upcase }
   let(:binary_string) { uuid.raw }
 
-  let(:instance) { described_class.new }
+  context "with binary storage" do
+    let(:instance) { described_class.new(:binary) }
 
-  describe "#cast" do
-    subject { instance.method(:cast) }
-    example { expect(subject.(uuid)).to be_respective_uuid }
-    example { expect(subject.(hex_with_dashes)).to be_respective_uuid }
-    example { expect(subject.(hex_without_dashes)).to be_respective_uuid }
-    example { expect(subject.(nil)).to be(nil) }
+    describe "#cast" do
+      subject { instance.method(:cast) }
+      example { expect(subject.(uuid)).to be_respective_uuid }
+      example { expect(subject.(hex_with_dashes)).to be_respective_uuid }
+      example { expect(subject.(hex_without_dashes)).to be_respective_uuid }
+      example { expect(subject.(nil)).to be(nil) }
+    end
+
+    describe "#serialize" do
+      subject { instance.method(:serialize) }
+      example { expect(subject.(uuid)).to be_respective_binary }
+      example { expect(subject.(nil)).to be(nil) }
+    end
+
+    describe "#deserialize" do
+      subject { instance.method(:deserialize) }
+      example { expect(subject.(binary_string)).to be_respective_uuid }
+      example { expect(subject.(nil)).to be(nil) }
+    end
   end
 
-  describe "#serialize" do
-    subject { instance.method(:serialize) }
-    example { expect(subject.(uuid)).to be_respective_binary }
-    example { expect(subject.(nil)).to be(nil) }
-  end
+  context "with string storage" do
+    let(:instance) { described_class.new(:string) }
 
-  describe "#deserialize" do
-    subject { instance.method(:deserialize) }
-    example { expect(subject.(binary_string)).to be_respective_uuid }
-    example { expect(subject.(nil)).to be(nil) }
+    describe "#cast" do
+      subject { instance.method(:cast) }
+      example { expect(subject.(uuid)).to be_respective_uuid }
+      example { expect(subject.(hex_with_dashes)).to be_respective_uuid }
+      example { expect(subject.(hex_without_dashes)).to be_respective_uuid }
+      example { expect(subject.(nil)).to be(nil) }
+    end
+
+    describe "#serialize" do
+      subject { instance.method(:serialize) }
+      example { expect(subject.(uuid)).to be_respective_uuid_string }
+      example { expect(subject.(nil)).to be(nil) }
+    end
+
+    describe "#deserialize" do
+      subject { instance.method(:deserialize) }
+      example { expect(subject.(binary_string)).to be_respective_uuid }
+      example { expect(subject.(nil)).to be(nil) }
+    end
   end
 
   def be_respective_uuid
@@ -36,5 +62,9 @@ describe ActiveUUID::AttributeType do
 
   def be_respective_binary
     eq(binary_string) & be_instance_of(::ActiveRecord::Type::Binary::Data)
+  end
+
+  def be_respective_uuid_string
+    eq(hex_with_dashes) & be_instance_of(String)
   end
 end
