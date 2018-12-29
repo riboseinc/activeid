@@ -1,9 +1,11 @@
-fab_names = %i[
-  article
-  uuid_article
-  uuid_article_with_namespace
-  uuid_article_with_natural_key
-]
+uuid_fab_prefixes = %i[binary string native]
+uuid_fab_suffixes = [nil, :with_namespace, :with_natural_key]
+
+fab_names = uuid_fab_prefixes.product(uuid_fab_suffixes).map do |p, s|
+  [p, "uuid_article", s].compact.join("_").to_sym
+end
+
+fab_names.push(:article)
 
 fab_names.each do |fab_name|
   Fabricator(fab_name) do

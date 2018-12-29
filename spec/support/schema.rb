@@ -7,12 +7,32 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
-  create_table :uuid_articles, id: false, force: true do |t|
-    t.uuid :id, primary_key: true
+  create_table :binary_uuid_articles, id: false, force: true do |t|
+    t.binary :id, limit: 16, primary_key: true
     t.string :title
     t.text :body
-    t.uuid :another_uuid
+    t.binary :another_uuid, limit: 16
 
     t.timestamps
+  end
+
+  create_table :string_uuid_articles, id: false, force: true do |t|
+    t.string :id, limit: 36, primary_key: true
+    t.string :title
+    t.text :body
+    t.string :another_uuid, limit: 36
+
+    t.timestamps
+  end
+
+  if ENV["DB"] == "postgresql"
+    create_table :native_uuid_articles, id: false, force: true do |t|
+      t.uuid :id, primary_key: true
+      t.string :title
+      t.text :body
+      t.uuid :another_uuid
+
+      t.timestamps
+    end
   end
 end
