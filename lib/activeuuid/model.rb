@@ -1,5 +1,5 @@
 module ActiveUUID
-  module UUID
+  module Model
     extend ActiveSupport::Concern
 
     included do
