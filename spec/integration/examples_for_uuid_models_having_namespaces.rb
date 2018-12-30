@@ -7,6 +7,6 @@ shared_examples "model with UUIDs and a namespace" do
   let!(:uuid) { UUIDTools::UUID.sha1_create(namespace, article.title) }
   subject { article }
   context "natural_key_with_namespace" do
-    its(:id) { should == uuid }
+    its(:id) { is_expected.to eq(uuid) }
   end
 end

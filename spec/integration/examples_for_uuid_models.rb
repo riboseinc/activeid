@@ -7,14 +7,14 @@ shared_examples "model with UUIDs" do
   subject { model }
 
   context "model" do
-    its(:primary_key) { should == "id" }
-    its(:all) { should == [article] }
-    its(:first) { should == article }
+    its(:primary_key) { is_expected.to eq("id") }
+    its(:all) { is_expected.to eq([article]) }
+    its(:first) { is_expected.to eq(article) }
   end
 
   context "existance" do
     subject { article }
-    its(:id) { should be_a UUIDTools::UUID }
+    its(:id) { is_expected.to be_a UUIDTools::UUID }
   end
 
   context "interpolation" do
@@ -42,13 +42,13 @@ shared_examples "model with UUIDs" do
 
   context "#destroy" do
     subject { article }
-    its(:delete) { should be_truthy }
-    its(:destroy) { should be_truthy }
+    its(:delete) { is_expected.to be_truthy }
+    its(:destroy) { is_expected.to be_truthy }
   end
 
   context "#reload" do
     subject { article }
-    its(:'reload.id') { should == id }
+    its(:'reload.id') { is_expected.to eq(id) }
     specify { expect(subject.reload(select: :another_uuid).id).to eq(id) }
   end
 

@@ -7,13 +7,13 @@ describe Article do
   subject { model }
 
   context "model" do
-    its(:all) { should == [article] }
-    its(:first) { should == article }
+    its(:all) { is_expected.to eq([article]) }
+    its(:first) { is_expected.to eq(article) }
   end
 
   context "existance" do
     subject { article }
-    its(:id) { should be_a Integer }
+    its(:id) { is_expected.to be_a Integer }
   end
 
   context ".find" do
@@ -26,19 +26,19 @@ describe Article do
 
   context "#destroy" do
     subject { article }
-    its(:delete) { should be_truthy }
-    its(:destroy) { should be_truthy }
+    its(:delete) { is_expected.to be_truthy }
+    its(:destroy) { is_expected.to be_truthy }
   end
 
   context "#save" do
     subject { article }
     let(:array) { [1, 2, 3] }
 
-    its(:save) { should be_truthy }
+    its(:save) { is_expected.to be_truthy }
 
     context "when change array field" do
       before { article.some_array = array }
-      its(:save) { should be_truthy }
+      its(:save) { is_expected.to be_truthy }
     end
   end
 end
