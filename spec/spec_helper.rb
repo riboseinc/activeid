@@ -23,18 +23,6 @@ require "activeuuid"
 
 ActiveRecord::Base.establish_connection(ENV["DB"].to_sym)
 
-if ENV["DB"] == "mysql"
-  if ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR <= 1
-    class ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
-      NATIVE_DATABASE_TYPES[:primary_key] = "int(11) auto_increment PRIMARY KEY"
-    end
-  elsif ActiveRecord::VERSION::MAJOR == 3
-    class ActiveRecord::ConnectionAdapters::Mysql2Adapter
-      NATIVE_DATABASE_TYPES[:primary_key] = "int(11) auto_increment PRIMARY KEY"
-    end
-  end
-end
-
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
@@ -57,11 +45,5 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
-  end
-
-  def spec_for_adapter
-    switcher = ActiveUUID::SpecSupport::SpecForAdapter.new
-    yield switcher
-    switcher.run(connection)
   end
 end
