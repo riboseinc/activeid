@@ -23,12 +23,3 @@ matrix:
   allow_failures:
     - gemfile: gemfiles/Rails-head.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: Gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-4_2.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-5_0.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-5_1.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-5_2.gemfile
