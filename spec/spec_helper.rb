@@ -17,7 +17,7 @@ ActiveRecord::Base.logger = Logger.new(File.expand_path("debug.log", __dir__))
 ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.expand_path("support/database.yml", __dir__)))
 ActiveRecord::Base.establish_connection(ENV["DB"].to_sym)
 
-Dir[File.expand_path("support/**/*.rb", __dir__)].each { |f| require f }
+Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Remove this line if you don't want RSpec's should and should_not
