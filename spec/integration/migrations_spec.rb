@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "migration methods" do
+RSpec.describe "migration methods" do
   shared_examples "active record examples" do |can_change_column_to_uuid: true|
     let(:connection) { ActiveRecord::Base.connection }
     let(:table_name) { :test_uuid_field_creation }

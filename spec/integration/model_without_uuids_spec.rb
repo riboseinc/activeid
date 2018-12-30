@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Article do
+RSpec.describe Article do
   let!(:article) { Fabricate :article }
   let(:id) { article.id }
   let(:model) { Article }
