@@ -10,11 +10,7 @@ rvm:
   - jruby
 
 gemfile:
-  - Gemfile
-  - gemfiles/Rails-5_0.gemfile
-  - gemfiles/Rails-5_1.gemfile
   - gemfiles/Rails-5_2.gemfile
-  - gemfiles/Rails-head.gemfile
 
 env:
   - DB=sqlite3
@@ -22,6 +18,25 @@ env:
   - DB=postgresql
 
 matrix:
+  include:
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=postgresql
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=postgresql
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=postgresql
   allow_failures:
     - gemfile: gemfiles/Rails-head.gemfile
     - rvm: jruby
