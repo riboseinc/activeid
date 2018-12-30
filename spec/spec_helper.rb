@@ -8,19 +8,13 @@ end
 
 ENV["DB"] ||= "sqlite3"
 
-require "rubygems"
 require "bundler/setup"
-
 Bundler.require :development
-
-require "active_record"
-require "active_support/all"
-
-ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.dirname(__FILE__) + "/support/database.yml"))
 
 require "activeuuid"
 
+ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
+ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.dirname(__FILE__) + "/support/database.yml"))
 ActiveRecord::Base.establish_connection(ENV["DB"].to_sym)
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
