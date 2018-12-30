@@ -13,8 +13,10 @@ Bundler.require :development
 
 require "activeuuid"
 
-ActiveRecord::Base.logger = Logger.new(File.expand_path("../log/test.log", __dir__))
-ActiveRecord::Base.configurations = YAML::safe_load(File.read(File.expand_path("support/database.yml", __dir__)))
+ActiveRecord::Base.logger =
+  Logger.new(File.expand_path("../log/test.log", __dir__))
+ActiveRecord::Base.configurations =
+  YAML::safe_load(File.read(File.expand_path("support/database.yml", __dir__)))
 ActiveRecord::Base.establish_connection(ENV["DB"].to_sym)
 
 Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }
