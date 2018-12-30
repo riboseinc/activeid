@@ -6,6 +6,6 @@ shared_examples "model with UUIDs and a natural key" do
   let!(:uuid) { UUIDTools::UUID.sha1_create(UUIDTools::UUID_OID_NAMESPACE, article.title) }
   subject { article }
   context "natural_key" do
-    its(:id) { should == uuid }
+    its(:id) { is_expected.to eq(uuid) }
   end
 end
