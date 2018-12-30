@@ -1,6 +1,6 @@
 require "spec_helper"
 
-shared_examples "model with UUIDs and a namespace" do
+RSpec.shared_examples "model with UUIDs and a namespace" do
   let!(:article) { Fabricate model.name.underscore }
   let!(:id) { article.id }
   let!(:namespace) { model._uuid_namespace }

@@ -2,7 +2,7 @@ require "spec_helper"
 
 # Type assertions are necessary because you can't tell UUID and String apart
 # with regular ==.
-describe ActiveUUID::AttributeType do
+RSpec.describe ActiveUUID::AttributeType do
   let(:uuid) { UUIDTools::UUID.parse(hex_with_dashes) }
   let(:hex_with_dashes) { "472b22d4-9fa3-45c4-86cd-2f2cdf77d485" }
   let(:hex_without_dashes) { hex_with_dashes.delete("-").upcase }
