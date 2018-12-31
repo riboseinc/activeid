@@ -11,7 +11,11 @@ ENV["DB"] ||= "sqlite3"
 require "bundler/setup"
 Bundler.require :development
 
-require "active_uuid/all"
+if ENV.fetch("NO_PATCHES", false)
+  require "active_uuid"
+else
+  require "active_uuid/all"
+end
 
 ActiveRecord::Base.logger =
   Logger.new(File.expand_path("../log/test.log", __dir__))

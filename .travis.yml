@@ -44,6 +44,10 @@ matrix:
       env: DB=mysql
     - gemfile: gemfiles/Rails-5_0.gemfile
       env: DB=postgresql
+    # Without monkey patches
+    - env: DB=sqlite3 NO_PATCHES=1
+    - env: DB=mysql NO_PATCHES=1
+    - env: DB=postgresql NO_PATCHES=1
   allow_failures:
     - gemfile: gemfiles/Rails-head.gemfile
     - rvm: jruby

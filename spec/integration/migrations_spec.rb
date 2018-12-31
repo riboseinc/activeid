@@ -1,6 +1,12 @@
 require "spec_helper"
 
 RSpec.describe "migration methods" do
+  before do
+    if ENV.fetch("NO_PATCHES", false)
+      skip "Migrations are unavailable without monkey patching"
+    end
+  end
+
   shared_examples "active record examples" do |can_change_column_to_uuid: true|
     let(:connection) { ActiveRecord::Base.connection }
     let(:table_name) { :test_uuid_field_creation }
