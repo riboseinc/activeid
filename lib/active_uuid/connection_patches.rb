@@ -3,7 +3,7 @@ require "active_support/concern"
 
 
 module ActiveUUID
-  module Patches
+  module ConnectionPatches
     module Migrations
       def uuid(*column_names)
         options = column_names.extract_options!
