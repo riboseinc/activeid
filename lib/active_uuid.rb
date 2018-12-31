@@ -11,5 +11,3 @@ module ActiveUUID
     delegate :quote_as_binary, to: Utils
   end
 end
-
-ActiveUUID::ConnectionPatches.apply!

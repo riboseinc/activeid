@@ -55,3 +55,5 @@ module ActiveUUID
     end
   end
 end
+
+ActiveUUID::ConnectionPatches.apply!
