@@ -1,9 +1,11 @@
-https://travis-ci.org/riboseinc/activeuuid[image:https://travis-ci.org/riboseinc/activeuuid.svg?branch=master[Build
-Status]]
-https://codeclimate.com/github/riboseinc/activeuuid[image:https://codeclimate.com/github/riboseinc/activeuuid/badges/gpa.svg[Code
-Climate Quality]]
-https://codeclimate.com/github/riboseinc/activeuuid/coverage[image:https://codeclimate.com/github/riboseinc/activeuuid/badges/coverage.svg[Code
-Climate Coverage]]
+ifdef::env-github[]
+image:https://img.shields.io/travis/riboseinc/activeuuid/master.svg[
+  Build Status, link="https://travis-ci.org/riboseinc/activeuuid/branches"]
+image:https://img.shields.io/codecov/c/github/riboseinc/activeuuid/master.svg[
+  Test Coverage, link="https://codecov.io/gh/riboseinc/activeuuid"]
+image:https://img.shields.io/codeclimate/maintainability/riboseinc/activeuuid.svg[
+  "Code Climate", link="https://codeclimate.com/github/riboseinc/activeuuid"]
+endif::[]
 
 = activeuuid
 
