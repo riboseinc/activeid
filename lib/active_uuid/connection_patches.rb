@@ -5,12 +5,8 @@ require "active_support/concern"
 module ActiveUUID
   module ConnectionPatches
     module ColumnMethods
-      def uuid(*column_names)
-        options = column_names.extract_options!
-        column_names.each do |name|
-          type = ActiveRecord::Base.connection.adapter_name.casecmp("postgresql").zero? ? "uuid" : "binary(16)"
-          column(name, "#{type}#{' PRIMARY KEY' if options.delete(:primary_key)}", options)
-        end
+      def uuid(*args, **options)
+        args.each { |name| column(name, :uuid, options) }
       end
     end
 
