@@ -59,7 +59,7 @@ RSpec.shared_examples "model with UUIDs" do
     let(:uuid) { UUIDTools::UUID.random_create }
 
     it "has proper ActiveRecord type" do
-      expect(attr_type).to be_kind_of(ActiveUUID::AttributeType)
+      expect(attr_type).to be_kind_of(ActiveUUID::AttributeType::Base)
     end
 
     it "allows to assign UUID instance" do

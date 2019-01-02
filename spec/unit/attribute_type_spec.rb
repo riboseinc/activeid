@@ -8,8 +8,8 @@ RSpec.describe ActiveUUID::AttributeType do
   let(:hex_without_dashes) { hex_with_dashes.delete("-").upcase }
   let(:binary_string) { uuid.raw }
 
-  context "with binary storage" do
-    let(:instance) { described_class.new(:binary) }
+  describe ActiveUUID::AttributeType::BinaryUUID do
+    let(:instance) { described_class.new }
 
     describe "#cast" do
       subject { instance.method(:cast) }
@@ -32,8 +32,8 @@ RSpec.describe ActiveUUID::AttributeType do
     end
   end
 
-  context "with string storage" do
-    let(:instance) { described_class.new(:string) }
+  describe ActiveUUID::AttributeType::StringUUID do
+    let(:instance) { described_class.new }
 
     describe "#cast" do
       subject { instance.method(:cast) }
