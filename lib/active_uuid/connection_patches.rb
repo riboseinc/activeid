@@ -4,7 +4,7 @@ require "active_support/concern"
 
 module ActiveUUID
   module ConnectionPatches
-    module Migrations
+    module ColumnMethods
       def uuid(*column_names)
         options = column_names.extract_options!
         column_names.each do |name|
@@ -40,8 +40,8 @@ module ActiveUUID
 
         aca = ActiveRecord::ConnectionAdapters
 
-        aca::Table.send           :include, Migrations if defined? aca::Table
-        aca::TableDefinition.send :include, Migrations if defined? aca::TableDefinition
+        aca::Table.send           :include, ColumnMethods if defined? aca::Table
+        aca::TableDefinition.send :include, ColumnMethods if defined? aca::TableDefinition
 
         aca::MysqlAdapter.send      :prepend, Quoting           if defined? aca::MysqlAdapter
         aca::Mysql2Adapter.send     :prepend, Quoting           if defined? aca::Mysql2Adapter
