@@ -24,10 +24,6 @@ module ActiveUUID
       def uuid_generator(generator_name)
         self._uuid_generator = generator_name
       end
-
-      def uuid_columns
-        @uuid_columns ||= columns.select { |c| c.type == :uuid }.map(&:name)
-      end
     end
 
     def create_uuid
