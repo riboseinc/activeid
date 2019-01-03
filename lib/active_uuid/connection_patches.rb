@@ -34,15 +34,15 @@ module ActiveUUID
       def establish_connection(_ = nil)
         super
 
-        aca = ActiveRecord::ConnectionAdapters
+        arca = ActiveRecord::ConnectionAdapters
 
-        aca::Table.send           :include, ColumnMethods if defined? aca::Table
-        aca::TableDefinition.send :include, ColumnMethods if defined? aca::TableDefinition
+        arca::Table.send           :include, ColumnMethods if defined? arca::Table
+        arca::TableDefinition.send :include, ColumnMethods if defined? arca::TableDefinition
 
-        aca::MysqlAdapter.send      :prepend, Quoting           if defined? aca::MysqlAdapter
-        aca::Mysql2Adapter.send     :prepend, Quoting           if defined? aca::Mysql2Adapter
-        aca::SQLite3Adapter.send    :prepend, Quoting           if defined? aca::SQLite3Adapter
-        aca::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? aca::PostgreSQLAdapter
+        arca::MysqlAdapter.send      :prepend, Quoting           if defined? arca::MysqlAdapter
+        arca::Mysql2Adapter.send     :prepend, Quoting           if defined? arca::Mysql2Adapter
+        arca::SQLite3Adapter.send    :prepend, Quoting           if defined? arca::SQLite3Adapter
+        arca::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? arca::PostgreSQLAdapter
       end
     end
 
