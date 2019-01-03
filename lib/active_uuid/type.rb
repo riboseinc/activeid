@@ -5,7 +5,7 @@ module ActiveUUID
   #
   # See docs for +::ActiveRecord::Attributes::ClassMethods#attribute+ for usage.
   # See docs for +::ActiveRecord::Type::Value+ for meaning of overriden methods.
-  module AttributeType
+  module Type
     class Base < ::ActiveRecord::Type::Value
       attr_reader :storage_type
 
