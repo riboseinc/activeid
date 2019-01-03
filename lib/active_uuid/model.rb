@@ -26,13 +26,6 @@ module ActiveUUID
         self._uuid_generator = generator_name
       end
 
-      def uuids(*_attributes)
-        ActiveSupport::Deprecation.warn <<-EOS
-          ActiveUUID detects uuid columns independently.
-          There is no more need to use uuid method.
-        EOS
-      end
-
       def uuid_columns
         @uuid_columns ||= columns.select { |c| c.type == :uuid }.map(&:name)
       end
