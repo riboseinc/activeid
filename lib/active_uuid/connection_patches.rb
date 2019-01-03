@@ -36,13 +36,13 @@ module ActiveUUID
 
         arca = ActiveRecord::ConnectionAdapters
 
-        arca::Table.send           :include, ColumnMethods if defined? arca::Table
-        arca::TableDefinition.send :include, ColumnMethods if defined? arca::TableDefinition
+        arca::Table.include(ColumnMethods) if defined? arca::Table
+        arca::TableDefinition.include(ColumnMethods) if defined? arca::TableDefinition
 
-        arca::MysqlAdapter.send      :prepend, Quoting           if defined? arca::MysqlAdapter
-        arca::Mysql2Adapter.send     :prepend, Quoting           if defined? arca::Mysql2Adapter
-        arca::SQLite3Adapter.send    :prepend, Quoting           if defined? arca::SQLite3Adapter
-        arca::PostgreSQLAdapter.send :prepend, PostgreSQLQuoting if defined? arca::PostgreSQLAdapter
+        arca::MysqlAdapter.prepend(Quoting) if defined? arca::MysqlAdapter
+        arca::Mysql2Adapter.prepend(Quoting) if defined? arca::Mysql2Adapter
+        arca::SQLite3Adapter.prepend(Quoting) if defined? arca::SQLite3Adapter
+        arca::PostgreSQLAdapter.prepend(PostgreSQLQuoting) if defined? arca::PostgreSQLAdapter
       end
     end
 
