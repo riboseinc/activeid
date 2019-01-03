@@ -8,7 +8,6 @@ module ActiveUUID
       class_attribute :_uuid_generator, instance_writer: false
       self._uuid_generator = :random
 
-      singleton_class.prepend Instantiation
       before_create :generate_uuids_if_needed
     end
 
@@ -28,16 +27,6 @@ module ActiveUUID
 
       def uuid_columns
         @uuid_columns ||= columns.select { |c| c.type == :uuid }.map(&:name)
-      end
-    end
-
-    module Instantiation
-      def instantiate(record, _record_models = nil)
-        uuid_columns.each do |uuid_column|
-          record[uuid_column] = UUIDTools::UUID.serialize(record[uuid_column]).to_s if record[uuid_column]
-        end
-
-        super(record)
       end
     end
 
