@@ -1,3 +1,5 @@
+require "active_support"
+
 module ActiveUUID
   module Model
     extend ActiveSupport::Concern
