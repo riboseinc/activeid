@@ -31,7 +31,7 @@ module ActiveUUID
     end
 
     module ConnectionHandling
-      def establish_connection(*_args)
+      def establish_connection(*_args) # rubocop:disable Metrics/MethodLength
         super
 
         arca = ActiveRecord::ConnectionAdapters
