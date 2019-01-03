@@ -1,7 +1,6 @@
 require "active_record"
 require "active_support/concern"
 
-
 module ActiveUUID
   module ConnectionPatches
     module ColumnMethods
