@@ -39,10 +39,21 @@ module ActiveUUID
         arca::Table.include(ColumnMethods)
         arca::TableDefinition.include(ColumnMethods)
 
-        arca::MysqlAdapter.prepend(Quoting) if defined? arca::MysqlAdapter
-        arca::Mysql2Adapter.prepend(Quoting) if defined? arca::Mysql2Adapter
-        arca::SQLite3Adapter.prepend(Quoting) if defined? arca::SQLite3Adapter
-        arca::PostgreSQLAdapter.prepend(PostgreSQLQuoting) if defined? arca::PostgreSQLAdapter
+        if defined? arca::MysqlAdapter
+          arca::MysqlAdapter.prepend(Quoting)
+        end
+
+        if defined? arca::Mysql2Adapter
+          arca::Mysql2Adapter.prepend(Quoting)
+        end
+
+        if defined? arca::SQLite3Adapter
+          arca::SQLite3Adapter.prepend(Quoting)
+        end
+
+        if defined? arca::PostgreSQLAdapter
+          arca::PostgreSQLAdapter.prepend(PostgreSQLQuoting)
+        end
       end
     end
 
