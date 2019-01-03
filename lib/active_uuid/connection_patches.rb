@@ -31,7 +31,7 @@ module ActiveUUID
     end
 
     module ConnectionHandling
-      def establish_connection(_ = nil)
+      def establish_connection(*_args)
         super
 
         arca = ActiveRecord::ConnectionAdapters
