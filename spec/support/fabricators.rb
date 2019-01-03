@@ -5,7 +5,7 @@ fab_names = uuid_fab_prefixes.product(uuid_fab_suffixes).map do |p, s|
   [p, "uuid_article", s].compact.join("_").to_sym
 end
 
-fab_names.push(:article)
+fab_names.push(:article, :registered_uuid_type_article)
 
 fab_names.each do |fab_name|
   Fabricator(fab_name) do

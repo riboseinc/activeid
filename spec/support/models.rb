@@ -39,3 +39,16 @@ end
   key_with_namescape_class_name = "#{regular_class_name}WithNamespace"
   Object.const_set key_with_namescape_class_name, key_with_namescape_class
 end
+
+class RegisteredUuidTypeArticle < ActiveRecord::Base
+  include ActiveUUID::Model
+
+  if ENV["DB"] == "postgresql"
+    self.table_name = "native_uuid_articles"
+  else
+    self.table_name = "binary_uuid_articles"
+  end
+
+  attribute :id, :uuid
+  attribute :another_uuid, :uuid
+end
