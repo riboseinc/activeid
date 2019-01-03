@@ -5,6 +5,9 @@ services:
   - mysql
   - postgresql
 
+before_install:
+  - gem install bundler -v "~> 1.17.0"
+
 before_script:
   - mysql -e 'create database activeuuid_test;'
   - psql -c 'create database activeuuid_test;' -U postgres
