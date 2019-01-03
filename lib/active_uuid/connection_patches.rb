@@ -36,8 +36,8 @@ module ActiveUUID
 
         arca = ActiveRecord::ConnectionAdapters
 
-        arca::Table.include(ColumnMethods) if defined? arca::Table
-        arca::TableDefinition.include(ColumnMethods) if defined? arca::TableDefinition
+        arca::Table.include(ColumnMethods)
+        arca::TableDefinition.include(ColumnMethods)
 
         arca::MysqlAdapter.prepend(Quoting) if defined? arca::MysqlAdapter
         arca::Mysql2Adapter.prepend(Quoting) if defined? arca::Mysql2Adapter
