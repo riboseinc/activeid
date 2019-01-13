@@ -29,22 +29,26 @@ module ActiveUUID
     end
 
     class BinaryUUID < Base
-      def instantiate_storage
-        ::ActiveRecord::Type::Binary.new
-      end
-
       def serialize(value)
         s_serialize(cast_to_uuid(value)&.raw)
+      end
+
+      protected
+
+      def instantiate_storage
+        ::ActiveRecord::Type::Binary.new
       end
     end
 
     class StringUUID < Base
-      def instantiate_storage
-        ::ActiveRecord::Type::String.new
-      end
-
       def serialize(value)
         s_serialize(cast_to_uuid(value)&.to_s)
+      end
+
+      protected
+
+      def instantiate_storage
+        ::ActiveRecord::Type::String.new
       end
     end
   end
