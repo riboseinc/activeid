@@ -1,11 +1,22 @@
 require "active_record"
 
 module ActiveUUID
-  # A data type to be used with ActiveRecord.
+  # ActiveRecord's attribute types for serializing UUIDs.
   #
-  # See docs for +::ActiveRecord::Attributes::ClassMethods#attribute+ for usage.
-  # See docs for +::ActiveRecord::Type::Value+ for meaning of overriden methods.
+  # ==== Examples
+  #
+  #   class Book
+  #     attribute :id, ActiveUUID::Type::BinaryUUID.new
+  #   end
+  #
+  # ==== See also
+  #
+  # * docs for +::ActiveRecord::Attributes::ClassMethods#attribute+
+  # * docs for +::ActiveRecord::Type::Value+
   module Type
+    # See subclasses.
+    #
+    # @abstract Subclasses should define at least +instantiate_storage+ method.
     class Base < ::ActiveRecord::Type::Value
       attr_reader :storage_type
 
@@ -28,6 +39,32 @@ module ActiveUUID
       end
     end
 
+    # ActiveRecord's attribute type which serializes UUIDs as binaries.  Useful
+    # for RDBSes which do not support UUIDs natively (i.e. MySQL, SQLite3).
+    #
+    # UUIDs serialized as binaries are more space efficient (16 bytes vs
+    # 36 characters of their text representation), which may also lead to
+    # performance boost if given column is indexed (a bigger piece of index can
+    # be kept in memory).  The downside is that this representation is less
+    # readable for humans who access serialized values outside Rails
+    # (i.e. in a database console).
+    #
+    # ==== Accessing in database console
+    #
+    # In MySQL (but not in MariaDB), there is
+    # a {+BIN_TO_UUID()+}[https://mysqlserverteam.com/mysql-8-0-uuid-support/]
+    # function which converts binaries to UUID strings.
+    # There is {a feature request}[https://jira.mariadb.org/browse/MDEV-15854]
+    # in MariaDB's issue tracker to add a similar feature.
+    #
+    # ==== Caveat
+    #
+    # Does not work with PostgreSQL adapter.  Nevertheless, there should not be
+    # any good reason to use {BinaryUUID} with PostgreSQL.  Open a feature
+    # request if you find any.
+    #
+    # In PostgreSQL, {StringUUID} attribute type is recommended as it is
+    # compatible with Postgres-specific +UUID+ data type.
     class BinaryUUID < Base
       def serialize(value)
         s_serialize(cast_to_uuid(value)&.raw)
@@ -40,6 +77,14 @@ module ActiveUUID
       end
     end
 
+    # ActiveRecord's attribute type which serializes UUIDs as strings.
+    #
+    # UUIDs are serialized as 36 characters long strings
+    # (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).  In PostgreSQL, this
+    # representation is compatible with +UUID+ data type, which is a unique
+    # feature of this RDBS.  In other RDBSes, this attribute type can be
+    # used with textual data types (e.g. +VARCHAR(36)+), however {BinaryUUID}
+    # should be preferred when performance matters.
     class StringUUID < Base
       def serialize(value)
         s_serialize(cast_to_uuid(value)&.to_s)
