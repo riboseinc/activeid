@@ -1,6 +1,7 @@
 require "active_support"
 
 module ActiveUUID
+  # Include this module into all models which are meant to store UUIDs.
   module Model
     extend ActiveSupport::Concern
 
