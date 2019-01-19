@@ -17,28 +17,9 @@ else
   require "active_uuid/all"
 end
 
-ActiveRecord::Base.logger =
-  Logger.new(File.expand_path("../log/test.log", __dir__))
-ActiveRecord::Base.configurations =
-  YAML::safe_load(File.read(File.expand_path("support/database.yml", __dir__)))
-ActiveRecord::Base.establish_connection(ENV["DB"].to_sym)
-
 Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }
 
 RSpec.configure do |config|
-  config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
-    DatabaseCleaner.strategy = :transaction
-  end
-
-  config.before(:each) do
-    DatabaseCleaner.start
-  end
-
-  config.after(:each) do
-    DatabaseCleaner.clean
-  end
-
   config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods
