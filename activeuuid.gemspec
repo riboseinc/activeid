@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", "~> 3.5"
   s.add_development_dependency "rspec-its"
+  s.add_development_dependency "solid_assert", "~> 1.0"
 
   if RUBY_ENGINE == "jruby"
     s.add_development_dependency "activerecord-jdbcmysql-adapter"
