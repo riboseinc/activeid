@@ -18,9 +18,9 @@ require_relative "../spec/support/1_db_connection"
 ActiveRecord::Schema.define do
   create_table :authors, id: false, force: true do |t|
     if ENV["DB"] == "postgresql"
-      t.uuid :id, primary_key: true, index: true
+      t.uuid :id, primary_key: true
     else
-      t.binary :id, limit: 16, primary_key: true, index: true
+      t.binary :id, limit: 16, primary_key: true
     end
     t.string :name
     t.timestamps

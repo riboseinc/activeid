@@ -15,7 +15,7 @@ require_relative "../spec/support/1_db_connection"
 
 ActiveRecord::Schema.define do
   create_table :authors, id: false, force: true do |t|
-    t.string :id, limit: 36, primary_key: true, index: true
+    t.string :id, limit: 36, primary_key: true
     t.string :name
     t.timestamps
   end
