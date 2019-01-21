@@ -1,3 +1,38 @@
+= activeuuid
+
+// Document setup
+:toc:
+:toc-placement!:
+:source-language: ruby
+:source-highlighter: pygments
+:pygments-style: native
+:pygments-linenums-mode: inline
+
+// Admonition captions in GitHub (here Emoji)
+// See: https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+// Links
+:dce_uuids: https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
+:gem_original: https://rubygems.org/gems/activeuuid
+:gem_uuidtools: https://github.com/sporkmonger/uuidtools
+:maria_jira_uuid_func: https://jira.mariadb.org/browse/MDEV-15854
+:mit_lic: https://opensource.org/licenses/MIT
+:mysql_uuid: https://mysqlserverteam.com/mysql-8-0-uuid-support/
+:examples: https://github.com/riboseinc/activeuuid/tree/master/examples
+:percona_blog: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/
+:rails_api_type_register: https://api.rubyonrails.org/classes/ActiveRecord/Type.html#method-c-register
+:rfc_uuids: https://tools.ietf.org/html/rfc4122
+:ribose: https://www.ribose.com
+:xkcd_comic: https://xkcd.com/927/
+
+// Badges
 ifdef::env-github[]
 image:https://img.shields.io/travis/riboseinc/activeuuid/master.svg[
   Build Status, link="https://travis-ci.org/riboseinc/activeuuid/branches"]
@@ -7,178 +42,351 @@ image:https://img.shields.io/codeclimate/maintainability/riboseinc/activeuuid.sv
   "Code Climate", link="https://codeclimate.com/github/riboseinc/activeuuid"]
 endif::[]
 
-= activeuuid
+A modern, performant and database-agnostic solution for storing UUIDs
+in ActiveRecord 5.0+, without any obligatory monkey patches.
 
-Add `binary(16)` UUIDs to ActiveRecord.
+This gem has evolved from a popular, but no longer maintained
+{gem_original}[ActiveUUID] gem, and its forks.
 
-Does not work with recently releaded version 1.0 of `pg` gem (yet).
+toc::[]
 
-== Example
+== Rationale
 
-=== Create a Migration
+If you search for "uuid" in RubyGems, you'll get
+https://rubygems.org/search?utf8=%E2%9C%93&query=uuid[142 results] (as of
+January 2019)…  Most are outdated, all are far from our needs.  Yes,
+{xkcd_comic}[we think we need another one].
 
-`activeuuid` adds the `uuid` type to your migrations. Example:
+=== Storing UUIDs as binaries in MySQL and SQLite3
 
-[source,ruby]
-----
-class CreateEmails < ActiveRecord::Migration
-  def self.up
-    create_table :emails, :id => false  do |t|
-      t.uuid :id, :primary_key => true
-      t.uuid :sender_id  # belongs_to :sender
+UUIDs are 16 bytes long, however their human-readable string representation
+takes 36 characters.  As a consequence, storing UUIDs in a human-readable
+format is space inefficient.  What is worse, whereas table row size is seldom
+a big concern, size of table indices is signifficant -- the bigger part of given
+index fits in RAM, the faster it works.  And UUID columns are commonly indexed…
 
-      t.string :subject
-      t.text :body
+[NOTE]
+================================================================================
+Another performance boost for UUIDs version 1 can be achieved by bits
+rearrangement.  This is not implemented yet, see
+https://github.com/riboseinc/activeuuid/issues/43[issue #43].
+================================================================================
 
-      t.timestamp :sent_at
+This gem brings an easy-to-use ability to efficiently store UUIDs in databases
+which do not provide a dedicated UUID data type (i.e. MySQL, MariaDB, SQLite3,
+etc.).
+
+=== Database-agnosticism
+
+This gem provides a uniform API for storing UUIDs in database, be it MariaDB,
+MySQL, SQLite3 (in binary or string format), or PostgreSQL (native data type).
+This is especially important when using it as a dependency of another gem.
+
+=== Monkey patching is optional
+
+No core feature relies on Rails monkey patching.  Monkey patches can interfere
+with other gems, and lead to issues.  Nevertheless, some convenient features
+(currently, migration methods only) are provided via monkey patching.  Enabling
+them is entirely optional, and their absence can be workarounded easily.
+
+=== Strings are not perfect for UUIDs
+
+Although UUIDs are commonly represented as strings, it is beneficial to
+introduce a dedicated class for following reasons:
+
+- not every sequence of 16 bytes (or 32 hexadecimal digits) makes a valid UUID
+- UUIDs are not opaque, they have their inner structure which can be accessed
+  (reading timestamp from time-based UUIDs is especially useful)
+- using string equality operator for UUID comparison may give wrong results
+  (upcased or lowercased strings, with dashes or without)
+
+It is somewhat similar case to URIs, which also can be represented as plain
+strings, but having a dedicated `URI` class is quite convenient.
+
+ActiveUUID uses `UUID` class from {gem_uuidtools}[UUIDTools] gem to represent
+UUIDs.
+
+== Usage
+
+[TIP]
+================================================================================
+You may want to explore {examples}[examples] directory, in which typical
+use cases are covered in bit more detail.
+================================================================================
+
+=== Installation
+
+Depending on you want to apply monkey patches or not, require either
+`activeuuid/all` (with monkey patches) or `activeuuid` (without them).
+
+For example, if you are using Gemfile:
+
+[source]
+--------------------------------------------------------------------------------
+gem "activeuuid" # without monkey patches
+# or
+gem "activeuuid", require: "activeuuid/all" # with monkey patches
+--------------------------------------------------------------------------------
+
+Depending on your needs, you can also pick monkey patches selectively -- just
+take a look at the contents of `lib/activeuuid/all.rb`.  However, currently
+it is not very useful, as there is very little to choose from.
+
+=== Adding UUIDs to models
+
+ActiveUUID relies on ActiveRecord's attributes API.  Two attribute types are
+defined: `StringUUID` and `BinaryUUID`.
+
+StringUUID serializes UUIDs as 36 characters long strings.  It is compatible
+with textual SQL types, e.g. `VARCHAR(36)`, and more importantly, with
+PostgreSQL-specific `UUID` type.
+
+BinaryUUID serializes UUIDs as 16 bytes long binaries, which can be stored
+in binary columns, e.g. `BLOB(16)` in SQLite3 or `VARBINARY(16)` in MySQL.
+However, it is not compatible with PostgreSQL at all due to syntax differences.
+See "<<Choosing between string and binary serialization>>" section for a brief
+explanation of pros and cons of both approaches.
+
+Whichever attribute type you prefer to use, an `ActiveUUID::Model` module must
+be included in model.
+
+For example, following example model stores two UUID attributes: `id`,
+and `thread_id` as binaries.
+
+[source]
+--------------------------------------------------------------------------------
+class Work < ActiveRecord::Base
+  include ActiveUUID::Model
+  attribute :id, ActiveUUID::Type::BinaryUUID.new
+  attribute :author_id, ActiveUUID::Type::BinaryUUID.new
+  belongs_to :author
+end
+--------------------------------------------------------------------------------
+
+=== Database migrations
+
+A convenience `#uuid` method is added via monkey patching to Active Record's
+`Table` and `TableDefinition` classes.
+
+- In MySQL adapter, it stands for a `VARBINARY(16)` column.
+- In SQLite3 adapter, it stands for a `BLOB(16)` column.
+- In PostgreSQL adapter, it is shadowed by a stock Rails method
+  `::ActiveRecord::ConnectionAdapters::PostgreSQL::ColumnMethods:uuid`, which
+  stands for a `UUID` column.
+
+If you want to use UUID column in your primary key, pass `:id => false` option
+to `create_table` method and `:primary_key => true` to column definition.
+
+For example:
+
+[source]
+--------------------------------------------------------------------------------
+class CreateWorks < ActiveRecord::Migration
+  def change
+    create_table :works, id: false, force: true do |t|
+      t.uuid :id, primary_key: true
+      t.uuid :author_id, index: true
+      t.string :title
       t.timestamps
     end
-    add_index :emails, :id
-  end
-
-  def self.down
-    drop_table :emails
   end
 end
-----
+--------------------------------------------------------------------------------
 
-=== include ActiveUUID::UUID in your model
+Alternatively, if monkey patches are disabled, `#uuid` method can be substituted
+with `#binary` in MySQL and SQLite3 adapters.  Following snippet is equivalent
+to the above one in these two adapters.  Please note `:limit => 16`, which is
+passed as an option.
 
-[source,ruby]
-----
-class Email < ActiveRecord::Base
-  include ActiveUUID::UUID
-  belongs_to :sender
-end
-----
-
-=== specify a natural key for generating the UUID based on one or more columns
-
-[source,ruby]
-----
-class Email < ActiveRecord::Base
-  include ActiveUUID::UUID
-  natural_key :sender_id, :received_at
-  belongs_to :sender
-end
-----
-
-`natural_key` generates a SHA1-based UUID in the ISO OID namespace by
-default. [7]
-
-=== specify a custom UUID namespace for the natural key
-
-[source,ruby]
-----
-class Email < ActiveRecord::Base
-  include ActiveUUID::UUID
-  uuid_namespace "1dd74dd0-d116-11e0-99c7-5ac5d975667e"
-  natural_key :sender_id, :received_at
-  belongs_to :sender
-end
-----
-
-`uuid_namespace` can either be a UUID in string format, or a
-UUIDTools::UUID object.
-
-=== use it:
-
-Here are some example specs:
-
-[source,ruby]
-----
-require 'spec_helper'
-
-describe Email do
-
-  context "when using uuid's as keys" do
-    let(:guid) { "1dd74dd0-d116-11e0-99c7-5ac5d975667e" }
-    let(:email) { Fabricate :email }
-
-    it "the id guid should be equal to the uuid" do
-      email.id.to_s.should eql(guid)
+[source]
+--------------------------------------------------------------------------------
+class CreateWorks < ActiveRecord::Migration
+  def change
+    create_table :works, id: false, force: true do |t|
+      t.binary :id, limit: 16, primary_key: true
+      t.binary :author_id, limit: 16, index: true
+      t.string :title
+      t.timestamps
     end
-
-    it "should be able to find an email by the uuid" do
-      Email.find(guid).id.to_s.should == guid
-    end
-
   end
 end
-----
+--------------------------------------------------------------------------------
 
-== Motivation
+=== Registering UUID types in Active Record's type registry
 
-From [2]:
+For convenience, Active UUID types can be added to Active Record's type
+registry.  Then you can reference them in your models with a symbol.
+See {rails_api_type_register}[Rails API docs] for detailed information.
 
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-[Here is a] UUID: 1e8ef774-581c-102c-bcfe-f1ab81872213
+For example, following will register `ActiveUUID::Type::BinaryUUID` at `:uuid`
+symbol for all adapters except for PostgreSQL, in which this symbol is already
+taken:
 
-A UUID like the one above is 36 characters long, including dashes. If
-you store this VARCHAR(36), you’re going to decrease compare performance
-dramatically. This is your primary key, you don’t want it to be slow.
+[source]
+--------------------------------------------------------------------------------
+ActiveRecord::Type.register(
+  :uuid,
+  ActiveUUID::Type::BinaryUUID,
+)
+--------------------------------------------------------------------------------
 
-At its bit level, a UUID is 128 bits, which means it will fit into 16
-bytes, note this is not very human readable, but it will keep storage
-low, and is only 4 times larger than a 32-bit int, or 2 times larger
-than a 64-bit int.
-___________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+With above set, only symbol needs to be specified in attribute declaration,
+as in following example:
 
-Many of the existing examples of how to use UUIDs as primary keys in
-Rails use strings rather than bytes (e.g. [3]).
+[source]
+--------------------------------------------------------------------------------
+class Author < ActiveRecord::Base
+  include ActiveUUID::Model
+  attribute :id, :uuid
+end
+--------------------------------------------------------------------------------
 
-However, this plugin stores the primary keys as bytes. To the
-application the keys are represented by a UUIDTools::UUID object.
+It is also possible to override `:uuid` in PostgreSQL adapter:
 
-== Benefits of UUIDs as primary key
+[source]
+--------------------------------------------------------------------------------
+ActiveRecord::Type.register(
+  :uuid,
+  ActiveUUID::Type::StringUUID,
+  adapter: :postgresql,
+  override: true,
+)
+--------------------------------------------------------------------------------
 
-* no id conflict during multi-master write
-* no locking due to auto-increment
-* with time-based UUIDs you can store a timestamp within your UUID
-* you can create natural keys (based on the SHA of model attributes)
+[CAUTION]
+================================================================================
+Overriding standard attribute types may cause other gems to behave abnormally.
+================================================================================
 
-== Future work
+=== Using UUIDs as primary keys
 
-* more transparent support for natural and composite keys
-* support for MySQLs `INSERT ... ON DUPLICATE KEY UPDATE` syntax
-* support a primary column name other than `id`
-* tests
+When model's primary key is a UUID, Active UUID automatically generates its
+value as a version 1, 4, or 5 UUID:
 
-== Inspiration
+- Version 1 UUIDs store timestamp of their creation, and are monotonically
+  increasing in time.  This is very advantageous in some use cases.
+- Version 4 UUIDs are pseudo-randomly generated.
+- Version 5 UUIDs are generated deterministically via SHA-1 hashing from values
+  of specified attributes, and UUID namespace.  They are well-suited for natural
+  keys.
 
-James Golick’s `friendly` is a great gem for NoSQL on MySQL. It’s a
-great gateway drug to systems like Cassandra for teams that are already
-familiar with the ins-and-outs of MySQL.
+UUIDs of all versions can be explicitly assigned to attributes.
 
-== Installation
+==== Random primary keys (version 4 UUIDs)
 
-Add this to your `Gemfile`
+If model's primary key is a UUID, a version 4 UUID is generated by default.
+For example:
 
-....
-gem "activeuuid"
-....
+[source]
+--------------------------------------------------------------------------------
+class Author < ActiveRecord::Base
+  include ActiveUUID::Model
+  attribute :id, ActiveUUID::Type::StringUUID.new
+end
+--------------------------------------------------------------------------------
 
-Or get the code here: https://github.com/inbeom/activeuuid
+=== Time-based primary keys (version 1 UUIDs)
 
-== References
+They are enabled for model's primary key with `#uuid_generator` method.
+For example:
 
-* [1] http://bret.appspot.com/entry/how-friendfeed-uses-mysql
-* [2]
-http://kekoav.com/blog/36-computers/58-uuids-as-primary-keys-in-mysql.html
-* [3] https://gist.github.com/937739
-* [4]
-http://www.codinghorror.com/blog/2007/03/primary-keys-ids-versus-guids.html
-* [5] http://krow.livejournal.com/497839.html
-* [6] https://github.com/jamesgolick/friendly
-* [7] http://tools.ietf.org/html/rfc4122.html#appendix-C
+[source]
+--------------------------------------------------------------------------------
+class Author < ActiveRecord::Base
+  include ActiveUUID::Model
+  attribute :id, ActiveUUID::Type::StringUUID.new
+  uuid_generator :time
+end
+--------------------------------------------------------------------------------
 
-== Dependencies
+=== Name-based primary keys a.k.a. natural keys (version 5 UUIDs)
 
-Rails >= 4.0.0
+They are enabled for model's primary key by passing attribute names to
+`#natural_key` method, and namespace to `#uuid_namespace` method.  The latter
+method accepts only UUIDs, either in string format, or a `UUIDTools::UUID`
+object.  If `#uuid_namespace` method is omitted, then ISO OID namespace is used.
 
-== Authors
+In following example, a natural key in `a6908e1e-5493-4c55-a11d-cd8445654de6`
+namespace will be build of values of `author_id`, and `title` attributes.
 
-* Nate Murray
+[source]
+--------------------------------------------------------------------------------
+class Work < ActiveRecord::Base
+  include ActiveUUID::Model
+  attribute :id, ActiveUUID::Type::BinaryUUID.new
+  attribute :author_id, ActiveUUID::Type::BinaryUUID.new
+  belongs_to :author
+  natural_key :author_id, :title
+  uuid_namespace "a6908e1e-5493-4c55-a11d-cd8445654de6"
+end
+--------------------------------------------------------------------------------
+
+== Choosing between string and binary serialization
+
+ActiveUUID allows you to choose between two ways of UUID serialization:
+as 36 characters long string, or as 16 bytes long binary.
+
+In PostgreSQL, the answer is easy: you should always choose string
+serialization.  It perfectly works with native `UUID` data type, which is
+a non-standard feature of PostgreSQL.  It also works with textual data types
+(i.e. `VARCHAR`, `TEXT`, etc.), but a `UUID` type seems to be a better choice
+for performance reasons.  Because of special syntax requirements in PostgreSQL,
+it does not work with binary types (i.e. `BYTEA`), however it seems to be
+a neglectable issue, as `UUID` type is more suitable.  Please open an issue
+if you disagree.
+
+In other RDBSs, either human-readability, or performance must be sacrificed.
+
+With binary serialization, UUIDs are stored in a space-efficient way as 16 bytes
+long binaries.  This is especially beneficial when column is indexed, which is
+a very common case.  Smaller value size means that a bigger piece of index can
+be kept in RAM, which often leads to a signifficant performance boost.
+The downside is that this representation is difficult to read for humans, who
+access serialized values outside Rails (e.g. in a database console, or in
+database logs).  See also an excellent article "link:{percona_blog}[Store UUID
+in an optimized way]" in Percona blog for more information about storing UUIDs
+as binaries.
+
+With string serialization, UUIDs are stored as 36 characters long strings, which
+consist only of lowercase hexadecimal digits, and dashes
+(`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).  They are easy to read for humans, but
+may hamper performance of indices, especially in case of large tables.
+
+=== Reading binary UUIDs in a database console
+
+MySQL features a {mysql_uuid}[`BIN_TO_UUID()`] function, which converts binary
+UUIDs to their human-readable string representation.  There is
+{maria_jira_uuid_func}[a feature request] to add a similar feature to MariaDB.
+
+== Contributing
+
+First, thank you for contributing! We love pull requests from everyone.
+By participating in this project, you hereby grant
+https://www.ribose.com[Ribose Inc.] the right to grant or transfer an
+unlimited number of non exclusive licenses or sub-licenses to third
+parties, under the copyright covering the contribution to use the
+contribution by all means.
+
+Here are a few technical guidelines to follow:
+
+1.  Open an https://github.com/riboseinc/enmail/issues[issue] to discuss
+    a new feature.
+2.  Write tests to support your new feature.
+3.  Make sure the entire test suite passes locally and on CI.
+4.  Open a Pull Request.
+5.  After receiving feedback, perform
+    https://help.github.com/articles/about-git-rebase/[an interactive rebase]
+    on your branch, in order to create a series of cohesive commits with
+    descriptive messages.
+6.  Party!
+
+== Credits
+
+This gem is developed, maintained and funded by {ribose}[Ribose Inc.]
+
+Original {gem_original}[ActiveUUID] gem has been developed by Nate Murray
+with notable help of:
+
 * pyromaniac
 * Andrew Kane
 * Devin Foley
@@ -190,3 +398,13 @@ Rails >= 4.0.0
 * Thomas Guillory
 * Daniel Blanco Rojas
 * Olivier Amblet
+
+== License
+
+The gem is available as open source under the terms of the {mit_lic}[MIT
+License].
+
+== See also
+
+* {rfc_uuids}[RFC 4122] "A Universally Unique IDentifier (UUID) URN Namespace"
+* original {gem_original}[ActiveUUID] gem (supports Rails < 5)
