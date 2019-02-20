@@ -7,11 +7,13 @@ group :development do
   gem "pry"
   gem "rake"
 
-  if RUBY_ENGINE == "jruby"
+  platform :jruby do
     gem "activerecord-jdbcmysql-adapter"
     gem "activerecord-jdbcpostgresql-adapter"
     gem "activerecord-jdbcsqlite3-adapter"
-  else
+  end
+
+  platform :ruby do
     gem "mysql2"
     gem "pg"
     gem "sqlite3", "~> 1.3.6"
