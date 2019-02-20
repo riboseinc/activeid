@@ -9,7 +9,7 @@ end
 ENV["DB"] ||= "sqlite3"
 
 require "bundler/setup"
-Bundler.require :development
+Bundler.require :development, :test
 
 if ENV.fetch("NO_PATCHES", false)
   require "active_uuid"

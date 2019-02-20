@@ -4,7 +4,7 @@
 ENV["DB"] ||= "sqlite3"
 
 require "bundler/setup"
-Bundler.require :development
+Bundler.require :development, :examples
 
 require "active_uuid"
 require_relative "../spec/support/0_logger"

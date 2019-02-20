@@ -5,7 +5,7 @@
 ENV["DB"] ||= "sqlite3"
 
 require "bundler/setup"
-Bundler.require :development
+Bundler.require :development, :examples
 
 # Note "active_uuid/all", which registers new column definitions!
 require "active_uuid/all"
