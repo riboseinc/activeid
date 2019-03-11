@@ -1,4 +1,4 @@
-require "activeuuid"
+require "active_uuid"
 require "rails"
 
 module ActiveUUID
