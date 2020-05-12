@@ -6,7 +6,7 @@ module ActiveUUID
     railtie_name :activeuuid
 
     config.to_prepare do
-      ActiveUUID::Patches.apply!
+      ActiveUUID::ConnectionPatches.apply!
     end
   end
 end
