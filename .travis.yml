@@ -12,6 +12,7 @@ gemfile:
   - gemfiles/Rails-4_2.gemfile
   - gemfiles/Rails-5_0.gemfile
   - gemfiles/Rails-5_1.gemfile
+  - gemfiles/Rails-5_2.gemfile
   - gemfiles/Rails-head.gemfile
 
 env:
