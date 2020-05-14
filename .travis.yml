@@ -1,19 +1,29 @@
+dist: xenial
+language: ruby
+
+cache:
+  bundler: true
+
+services:
+  - mysql
+  - postgresql
+
+before_install:
+  - gem install bundler -v "~> 1.17.0"
+
 before_script:
   - mysql -e 'create database activeuuid_test;'
   - psql -c 'create database activeuuid_test;' -U postgres
 
 rvm:
-  - 2.3.6
-  - 2.4.3
-  - jruby-9.1.15.0
+  - 2.6
+  - 2.5
+  - 2.4
+  - 2.3
+  - jruby
 
 gemfile:
-  - Gemfile
-  - gemfiles/Rails-4_2.gemfile
-  - gemfiles/Rails-5_0.gemfile
-  - gemfiles/Rails-5_1.gemfile
   - gemfiles/Rails-5_2.gemfile
-  - gemfiles/Rails-head.gemfile
 
 env:
   - DB=sqlite3
@@ -21,13 +31,29 @@ env:
   - DB=postgresql
 
 matrix:
+  include:
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-head.gemfile
+      env: DB=postgresql
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-5_1.gemfile
+      env: DB=postgresql
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=sqlite3
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=mysql
+    - gemfile: gemfiles/Rails-5_0.gemfile
+      env: DB=postgresql
+    # Without monkey patches
+    - env: DB=sqlite3 NO_PATCHES=1
+    - env: DB=mysql NO_PATCHES=1
+    - env: DB=postgresql NO_PATCHES=1
   allow_failures:
     - gemfile: gemfiles/Rails-head.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: Gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-4_2.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-5_0.gemfile
-    - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/Rails-5_1.gemfile
+    - rvm: jruby
