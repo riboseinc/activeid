@@ -32,7 +32,7 @@ jobs:
       - name: Install mysql and pg
         run: |
           brew install mysql
-          brew install pg
+          brew install postgres
           mysql -e 'create database activeuuid_test;'
           psql -c 'create database activeuuid_test;' -U postgres
 
