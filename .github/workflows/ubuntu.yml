@@ -34,8 +34,8 @@ jobs:
       - name: Install mysql and pg
         run: |
           # sudo apt-get update
-          sudo apt install -y mariadb-server
-          sudo apt install -y postgresql postgresql-contrib
+          # sudo apt install -y mariadb-server
+          sudo apt-get install -y postgresql postgresql-contrib
           mysql -e 'create database activeuuid_test;'
           psql -c 'create database activeuuid_test;' -U postgres
       - name: Update gems
