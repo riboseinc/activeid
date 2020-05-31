@@ -31,8 +31,8 @@ jobs:
           architecture: 'x64'
       - name: Install mysql and pg
         run: |
-          sudo brew install mysql
-          sudo brew install pg
+          brew install mysql
+          brew install pg
           mysql -e 'create database activeuuid_test;'
           psql -c 'create database activeuuid_test;' -U postgres
 
