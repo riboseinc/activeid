@@ -1,12 +1,12 @@
 require "active_record"
 
-module ActiveUUID
+module ActiveID
   # ActiveRecord's attribute types for serializing UUIDs.
   #
   # ==== Examples
   #
   #   class Book
-  #     attribute :id, ActiveUUID::Type::BinaryUUID.new
+  #     attribute :id, ActiveID::Type::BinaryUUID.new
   #   end
   #
   # ==== See also
@@ -20,7 +20,7 @@ module ActiveUUID
     class Base < ::ActiveRecord::Type::Value
       attr_reader :storage_type
 
-      delegate :cast_to_uuid, to: ActiveUUID::Utils
+      delegate :cast_to_uuid, to: ActiveID::Utils
       delegate :serialize, :deserialize, to: :storage_type, prefix: :s
 
       def initialize

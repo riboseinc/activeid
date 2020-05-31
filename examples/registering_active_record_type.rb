@@ -9,7 +9,7 @@ ENV["DB"] ||= "sqlite3"
 require "bundler/setup"
 Bundler.require :development
 
-require "active_uuid"
+require "active_id"
 require_relative "../spec/support/0_logger"
 require_relative "../spec/support/1_db_connection"
 
@@ -31,13 +31,13 @@ end
 
 ActiveRecord::Type.register(
   :uuid,
-  ActiveUUID::Type::BinaryUUID,
+  ActiveID::Type::BinaryUUID,
 )
 
 # In PostgreSQL adapter, +:uuid+ is already registered, but it can be overriden.
 ActiveRecord::Type.register(
   :uuid,
-  ActiveUUID::Type::StringUUID,
+  ActiveID::Type::StringUUID,
   adapter: :postgresql,
   override: true,
 )
@@ -45,7 +45,7 @@ ActiveRecord::Type.register(
 #### MODELS ####
 
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
+  include ActiveID::Model
   attribute :id, :uuid
 end
 
@@ -58,9 +58,9 @@ Author.create! name: "Edgar Alan Poe"
 assert Author.count == 1
 
 if ENV["DB"] == "postgresql"
-  assert ActiveUUID::Type::StringUUID === Author.first.type_for_attribute("id")
+  assert ActiveID::Type::StringUUID === Author.first.type_for_attribute("id")
 else
-  assert ActiveUUID::Type::BinaryUUID === Author.first.type_for_attribute("id")
+  assert ActiveID::Type::BinaryUUID === Author.first.type_for_attribute("id")
 end
 
 #### PROVE THAT ASSERTIONS WERE WORKING ####

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe ActiveUUID::Utils do
+RSpec.describe ActiveID::Utils do
   let(:uuid) { UUIDTools::UUID.parse hex_with_dashes }
   let(:hex_with_dashes) { "472b22d4-9fa3-45c4-86cd-2f2cdf77d485" }
   let(:hex_without_dashes) { hex_with_dashes.delete("-").upcase }
@@ -86,8 +86,8 @@ RSpec.describe ActiveUUID::Utils do
       expect(subject.(hex_without_dashes)).to be_a_binary_data_containing_uuid
     end
 
-    it "is also available (delegates) in ActiveUUID top-level module" do
-      expect(ActiveUUID).to respond_to(:quote_as_binary)
+    it "is also available (delegates) in ActiveID top-level module" do
+      expect(ActiveID).to respond_to(:quote_as_binary)
     end
 
     def be_a_binary_data_containing_uuid

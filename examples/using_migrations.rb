@@ -1,14 +1,14 @@
 # Active UUID features a convenience #uuid method, which may be used to create
 # a binary column in database migration.  Since it involves monkey patching,
-# "active_uuid/all" must be loaded.
+# "active_id/all" must be loaded.
 
 ENV["DB"] ||= "sqlite3"
 
 require "bundler/setup"
 Bundler.require :development
 
-# Note "active_uuid/all", which registers new column definitions!
-require "active_uuid/all"
+# Note "active_id/all", which registers new column definitions!
+require "active_id/all"
 
 require_relative "../spec/support/0_logger"
 require_relative "../spec/support/1_db_connection"

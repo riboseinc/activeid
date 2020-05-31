@@ -7,7 +7,7 @@ ENV["DB"] ||= "sqlite3"
 require "bundler/setup"
 Bundler.require :development
 
-require "active_uuid"
+require "active_id"
 require_relative "../spec/support/0_logger"
 require_relative "../spec/support/1_db_connection"
 
@@ -24,8 +24,8 @@ end
 #### MODELS ####
 
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::StringUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::StringUUID.new
   uuid_generator :time
 end
 

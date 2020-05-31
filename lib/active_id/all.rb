@@ -1,2 +1,2 @@
-require_relative "../active_uuid"
+require_relative "../active_id"
 require_relative "connection_patches"

@@ -5,7 +5,7 @@ ENV["DB"] ||= "sqlite3"
 require "bundler/setup"
 Bundler.require :development
 
-require "active_uuid"
+require "active_id"
 require_relative "../spec/support/0_logger"
 require_relative "../spec/support/1_db_connection"
 
@@ -29,15 +29,15 @@ end
 #### MODELS ####
 
 class Work < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::StringUUID.new
-  attribute :author_id, ActiveUUID::Type::StringUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::StringUUID.new
+  attribute :author_id, ActiveID::Type::StringUUID.new
   belongs_to :author
 end
 
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::StringUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::StringUUID.new
   has_many :works
 end
 

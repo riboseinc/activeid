@@ -4,9 +4,9 @@ sqlite3:
 postgresql:
   adapter: postgresql
   host: localhost
-  database: activeuuid_test
+  database: activeid_test
 mysql:
   adapter: mysql2
   username: root
-  database: activeuuid_test
+  database: activeid_test
   encoding: utf8
