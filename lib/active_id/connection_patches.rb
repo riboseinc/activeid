@@ -1,7 +1,7 @@
 require "active_record"
 require "active_support/concern"
 
-module ActiveUUID
+module ActiveID
   module ConnectionPatches
     module ColumnMethods
       def uuid(*args, **options)
@@ -62,4 +62,4 @@ module ActiveUUID
   end
 end
 
-ActiveUUID::ConnectionPatches.apply!
+ActiveID::ConnectionPatches.apply!

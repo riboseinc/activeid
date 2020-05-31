@@ -1,4 +1,4 @@
-= activeuuid
+= ActiveID: binary UUIDs for ActiveRecord
 
 // Document setup
 :toc:
@@ -20,12 +20,12 @@ endif::[]
 
 // Links
 :dce_uuids: https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
-:gem_original: https://rubygems.org/gems/activeuuid
+:gem_original: https://rubygems.org/gems/activeid
 :gem_uuidtools: https://github.com/sporkmonger/uuidtools
 :maria_jira_uuid_func: https://jira.mariadb.org/browse/MDEV-15854
 :mit_lic: https://opensource.org/licenses/MIT
 :mysql_uuid: https://mysqlserverteam.com/mysql-8-0-uuid-support/
-:examples: https://github.com/riboseinc/activeuuid/tree/master/examples
+:examples: https://github.com/riboseinc/activeid/tree/master/examples
 :percona_blog: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way/
 :rails_api_type_register: https://api.rubyonrails.org/classes/ActiveRecord/Type.html#method-c-register
 :rfc_uuids: https://tools.ietf.org/html/rfc4122
@@ -34,42 +34,43 @@ endif::[]
 
 // Badges
 ifdef::env-github[]
-image:https://img.shields.io/travis/riboseinc/activeuuid/master.svg[
-  Build Status, link="https://travis-ci.org/riboseinc/activeuuid/branches"]
-image:https://img.shields.io/codecov/c/github/riboseinc/activeuuid/master.svg[
-  Test Coverage, link="https://codecov.io/gh/riboseinc/activeuuid"]
-image:https://img.shields.io/codeclimate/maintainability/riboseinc/activeuuid.svg[
-  "Code Climate", link="https://codeclimate.com/github/riboseinc/activeuuid"]
+image:https://img.shields.io/travis/riboseinc/activeid/master.svg[
+  Build Status, link="https://travis-ci.org/riboseinc/activeid/branches"]
+image:https://img.shields.io/codecov/c/github/riboseinc/activeid/master.svg[
+  Test Coverage, link="https://codecov.io/gh/riboseinc/activeid"]
+image:https://img.shields.io/codeclimate/maintainability/riboseinc/activeid.svg[
+  "Code Climate", link="https://codeclimate.com/github/riboseinc/activeid"]
 endif::[]
 
 A modern, performant and database-agnostic solution for storing UUIDs
 in ActiveRecord 5.0+, without any obligatory monkey patches.
 
-This gem has evolved from a popular, but no longer maintained
-{gem_original}[ActiveUUID] gem, and its forks.
-
 toc::[]
 
 == Rationale
 
-If you search for "uuid" in RubyGems, you'll get
+If you search for "`uuid`" in RubyGems, you'll get
 https://rubygems.org/search?utf8=%E2%9C%93&query=uuid[142 results] (as of
 January 2019)…  Most are outdated, all are far from our needs.  Yes,
 {xkcd_comic}[we think we need another one].
+
+NOTE: ActiveID has evolved from a popular, but no longer maintained
+{gem_original}[ActiveID] gem, and its forks.
+From 2018 the gem was entirely rewritten to support newer Rails releases, and was finally detached as a fork in 2020 to prevent confusion from users. We thank Nate for bringing ActiveID to life!
 
 === Storing UUIDs as binaries in MySQL and SQLite3
 
 UUIDs are 16 bytes long, however their human-readable string representation
 takes 36 characters.  As a consequence, storing UUIDs in a human-readable
 format is space inefficient.  What is worse, whereas table row size is seldom
-a big concern, size of table indices is signifficant -- the bigger part of given
+a big concern, size of table indices is significant -- the bigger part of given
 index fits in RAM, the faster it works.  And UUID columns are commonly indexed…
 
 [NOTE]
 ================================================================================
 Another performance boost for UUIDs version 1 can be achieved by bits
 rearrangement.  This is not implemented yet, see
-https://github.com/riboseinc/activeuuid/issues/43[issue #43].
+https://github.com/riboseinc/activeid/issues/43[issue #43].
 ================================================================================
 
 This gem brings an easy-to-use ability to efficiently store UUIDs in databases
@@ -98,12 +99,12 @@ introduce a dedicated class for following reasons:
 - UUIDs are not opaque, they have their inner structure which can be accessed
   (reading timestamp from time-based UUIDs is especially useful)
 - using string equality operator for UUID comparison may give wrong results
-  (upcased or lowercased strings, with dashes or without)
+  (up-cased or lowercased strings, with dashes or without)
 
 It is somewhat similar case to URIs, which also can be represented as plain
 strings, but having a dedicated `URI` class is quite convenient.
 
-ActiveUUID uses `UUID` class from {gem_uuidtools}[UUIDTools] gem to represent
+ActiveID uses `UUID` class from {gem_uuidtools}[UUIDTools] gem to represent
 UUIDs.
 
 == Usage
@@ -117,24 +118,24 @@ use cases are covered in bit more detail.
 === Installation
 
 Depending on you want to apply monkey patches or not, require either
-`activeuuid/all` (with monkey patches) or `activeuuid` (without them).
+`activeid/all` (with monkey patches) or `activeid` (without them).
 
-For example, if you are using Gemfile:
+For example, if you are using `Gemfile`:
 
 [source]
 --------------------------------------------------------------------------------
-gem "activeuuid" # without monkey patches
+gem "activeid" # without monkey patches
 # or
-gem "activeuuid", require: "activeuuid/all" # with monkey patches
+gem "activeid", require: "activeid/all" # with monkey patches
 --------------------------------------------------------------------------------
 
 Depending on your needs, you can also pick monkey patches selectively -- just
-take a look at the contents of `lib/activeuuid/all.rb`.  However, currently
+take a look at the contents of `lib/activeid/all.rb`.  However, currently
 it is not very useful, as there is very little to choose from.
 
 === Adding UUIDs to models
 
-ActiveUUID relies on ActiveRecord's attributes API.  Two attribute types are
+ActiveID relies on ActiveRecord's attributes API.  Two attribute types are
 defined: `StringUUID` and `BinaryUUID`.
 
 StringUUID serializes UUIDs as 36 characters long strings.  It is compatible
@@ -147,7 +148,7 @@ However, it is not compatible with PostgreSQL at all due to syntax differences.
 See "<<Choosing between string and binary serialization>>" section for a brief
 explanation of pros and cons of both approaches.
 
-Whichever attribute type you prefer to use, an `ActiveUUID::Model` module must
+Whichever attribute type you prefer to use, an `ActiveID::Model` module must
 be included in model.
 
 For example, following example model stores two UUID attributes: `id`,
@@ -156,9 +157,9 @@ and `thread_id` as binaries.
 [source]
 --------------------------------------------------------------------------------
 class Work < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::BinaryUUID.new
-  attribute :author_id, ActiveUUID::Type::BinaryUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::BinaryUUID.new
+  attribute :author_id, ActiveID::Type::BinaryUUID.new
   belongs_to :author
 end
 --------------------------------------------------------------------------------
@@ -218,7 +219,7 @@ For convenience, Active UUID types can be added to Active Record's type
 registry.  Then you can reference them in your models with a symbol.
 See {rails_api_type_register}[Rails API docs] for detailed information.
 
-For example, following will register `ActiveUUID::Type::BinaryUUID` at `:uuid`
+For example, following will register `ActiveID::Type::BinaryUUID` at `:uuid`
 symbol for all adapters except for PostgreSQL, in which this symbol is already
 taken:
 
@@ -226,7 +227,7 @@ taken:
 --------------------------------------------------------------------------------
 ActiveRecord::Type.register(
   :uuid,
-  ActiveUUID::Type::BinaryUUID,
+  ActiveID::Type::BinaryUUID,
 )
 --------------------------------------------------------------------------------
 
@@ -236,7 +237,7 @@ as in following example:
 [source]
 --------------------------------------------------------------------------------
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
+  include ActiveID::Model
   attribute :id, :uuid
 end
 --------------------------------------------------------------------------------
@@ -247,7 +248,7 @@ It is also possible to override `:uuid` in PostgreSQL adapter:
 --------------------------------------------------------------------------------
 ActiveRecord::Type.register(
   :uuid,
-  ActiveUUID::Type::StringUUID,
+  ActiveID::Type::StringUUID,
   adapter: :postgresql,
   override: true,
 )
@@ -280,8 +281,8 @@ For example:
 [source]
 --------------------------------------------------------------------------------
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::StringUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::StringUUID.new
 end
 --------------------------------------------------------------------------------
 
@@ -293,8 +294,8 @@ For example:
 [source]
 --------------------------------------------------------------------------------
 class Author < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::StringUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::StringUUID.new
   uuid_generator :time
 end
 --------------------------------------------------------------------------------
@@ -312,9 +313,9 @@ namespace will be build of values of `author_id`, and `title` attributes.
 [source]
 --------------------------------------------------------------------------------
 class Work < ActiveRecord::Base
-  include ActiveUUID::Model
-  attribute :id, ActiveUUID::Type::BinaryUUID.new
-  attribute :author_id, ActiveUUID::Type::BinaryUUID.new
+  include ActiveID::Model
+  attribute :id, ActiveID::Type::BinaryUUID.new
+  attribute :author_id, ActiveID::Type::BinaryUUID.new
   belongs_to :author
   natural_key :author_id, :title
   uuid_namespace "a6908e1e-5493-4c55-a11d-cd8445654de6"
@@ -323,7 +324,7 @@ end
 
 == Choosing between string and binary serialization
 
-ActiveUUID allows you to choose between two ways of UUID serialization:
+ActiveID allows you to choose between two ways of UUID serialization:
 as 36 characters long string, or as 16 bytes long binary.
 
 In PostgreSQL, the answer is easy: you should always choose string
@@ -332,7 +333,7 @@ a non-standard feature of PostgreSQL.  It also works with textual data types
 (i.e. `VARCHAR`, `TEXT`, etc.), but a `UUID` type seems to be a better choice
 for performance reasons.  Because of special syntax requirements in PostgreSQL,
 it does not work with binary types (i.e. `BYTEA`), however it seems to be
-a neglectable issue, as `UUID` type is more suitable.  Please open an issue
+a neglect-able issue, as `UUID` type is more suitable.  Please open an issue
 if you disagree.
 
 In other RDBSs, either human-readability, or performance must be sacrificed.
@@ -340,7 +341,7 @@ In other RDBSs, either human-readability, or performance must be sacrificed.
 With binary serialization, UUIDs are stored in a space-efficient way as 16 bytes
 long binaries.  This is especially beneficial when column is indexed, which is
 a very common case.  Smaller value size means that a bigger piece of index can
-be kept in RAM, which often leads to a signifficant performance boost.
+be kept in RAM, which often leads to a significant performance boost.
 The downside is that this representation is difficult to read for humans, who
 access serialized values outside Rails (e.g. in a database console, or in
 database logs).  See also an excellent article "link:{percona_blog}[Store UUID
@@ -384,7 +385,7 @@ Here are a few technical guidelines to follow:
 
 This gem is developed, maintained and funded by {ribose}[Ribose Inc.]
 
-Original {gem_original}[ActiveUUID] gem has been developed by Nate Murray
+The {gem_original}[ActiveID] gem which ActiveID was based on has been developed by Nate Murray
 with notable help of:
 
 * pyromaniac
@@ -407,4 +408,4 @@ License].
 == See also
 
 * {rfc_uuids}[RFC 4122] "A Universally Unique IDentifier (UUID) URN Namespace"
-* original {gem_original}[ActiveUUID] gem (supports Rails < 5)
+* {gem_original}[ActiveID] gem (supports Rails < 5)

@@ -9,7 +9,7 @@ RSpec.describe "storing simple UUIDs as binaries" do
 
   include_examples "model with UUIDs" do
     let(:model) { BinaryUuidArticle }
-    let(:quoted_article_id) { ActiveUUID.quote_as_binary(article.id) }
+    let(:quoted_article_id) { ActiveID.quote_as_binary(article.id) }
   end
 end
 

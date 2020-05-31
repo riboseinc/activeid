@@ -1,6 +1,6 @@
 require "uuidtools"
 
-module ActiveUUID
+module ActiveID
   # Variety of convenience functions.
   module Utils
     module_function
@@ -36,7 +36,7 @@ module ActiveUUID
     # Casts UUID to binary and quotes it, so that it can be used in SQL query
     # interpolation.
     #
-    #   model.where("id = ?", ActiveUUID.quote_as_binary(some_uuid))
+    #   model.where("id = ?", ActiveID.quote_as_binary(some_uuid))
     #
     # This method is unable to determine the correct attribute type.
     # It always casts UUIDs to their binary form, which may be unwanted in some

@@ -1,6 +1,6 @@
 require "active_support"
 
-module ActiveUUID
+module ActiveID
   # Include this module into all models which are meant to store UUIDs.
   module Model
     extend ActiveSupport::Concern
@@ -47,7 +47,7 @@ module ActiveUUID
     def generate_uuids_if_needed
       primary_key = self.class.primary_key
       primary_key_attribute_type = self.class.type_for_attribute(primary_key)
-      if ::ActiveUUID::Type::Base === primary_key_attribute_type
+      if ::ActiveID::Type::Base === primary_key_attribute_type
         send("#{primary_key}=", create_uuid) unless send("#{primary_key}?")
       end
     end

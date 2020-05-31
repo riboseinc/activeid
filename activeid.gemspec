@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 
 $:.push File.expand_path("../lib", __FILE__)
-require "active_uuid/version"
+require "active_id/version"
 
 Gem::Specification.new do |s|
-  s.name        = "activeuuid"
-  s.version     = Activeuuid::VERSION
-  s.authors     = ["Nate Murray"]
-  s.email       = ["nate@natemurray.com"]
-  s.homepage    = "https://github.com/jashmenn/activeuuid"
-  s.summary     = "Add binary UUIDs to ActiveRecord in MySQL"
-  s.description = "Add binary (not string) UUIDs to ActiveRecord in MySQL"
+  s.name        = "activeid"
+  s.version     = ActiveID::VERSION
+  s.authors       = ["Ribose Inc."]
+  s.email         = ["open.source@ribose.com"]
+  s.homepage    = "https://github.com/riboseinc/activeid"
+  s.summary     = "Support for binary UUIDs in ActiveRecord"
+  s.description = "Support for binary UUIDs in ActiveRecord"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

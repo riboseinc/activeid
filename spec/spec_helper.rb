@@ -12,9 +12,9 @@ require "bundler/setup"
 Bundler.require :development
 
 if ENV.fetch("NO_PATCHES", false)
-  require "active_uuid"
+  require "active_id"
 else
-  require "active_uuid/all"
+  require "active_id/all"
 end
 
 Dir[File.expand_path("support/**/*.rb", __dir__)].sort.each { |f| require f }

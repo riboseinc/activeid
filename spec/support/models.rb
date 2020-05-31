@@ -15,10 +15,10 @@ end
 %w[binary string native].each do |table_prefix|
   table_name = "#{table_prefix}_uuid_articles"
   attribute_type_name = table_prefix == "binary" ? "BinaryUUID" : "StringUUID"
-  attribute_type = ActiveUUID::Type.const_get(attribute_type_name)
+  attribute_type = ActiveID::Type.const_get(attribute_type_name)
 
   regular_class = Class.new(ActiveRecord::Base) do
-    include ActiveUUID::Model
+    include ActiveID::Model
     self.table_name = table_name
     attribute :id, attribute_type.new
     attribute :another_uuid, attribute_type.new
