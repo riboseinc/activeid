@@ -34,12 +34,13 @@ endif::[]
 
 // Badges
 ifdef::env-github[]
-image:https://img.shields.io/travis/riboseinc/activeid/master.svg[
-  Build Status, link="https://travis-ci.org/riboseinc/activeid/branches"]
-image:https://img.shields.io/codecov/c/github/riboseinc/activeid/master.svg[
-  Test Coverage, link="https://codecov.io/gh/riboseinc/activeid"]
-image:https://img.shields.io/codeclimate/maintainability/riboseinc/activeid.svg[
-  "Code Climate", link="https://codeclimate.com/github/riboseinc/activeid"]
+image:https://img.shields.io/gem/v/activeid.svg["Gem Version", link="https://rubygems.org/gems/activeid"]
+image:https://github.com/riboseinc/activeid/workflows/macos/badge.svg["Build Status (macOS)", link="https://github.com/riboseinc/activeid/actions?workflow=macos"]
+image:https://github.com/riboseinc/activeid/workflows/ubuntu/badge.svg["Build Status (ubuntu)", link="https://github.com/riboseinc/activeid/actions?workflow=ubuntu"]
+image:https://github.com/riboseinc/activeid/workflows/windows/badge.svg["Build Status (Windows)", link="https://github.com/riboseinc/activeid/actions?workflow=windows"]
+image:https://codeclimate.com/github/riboseinc/activeid/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/riboseinc/activeid"]
+image:https://img.shields.io/github/issues-pr-raw/riboseinc/activeid.svg["Pull Requests", link="https://github.com/riboseinc/activeid/pulls"]
+image:https://img.shields.io/github/commits-since/riboseinc/activeid/latest.svg["Commits since latest",link="https://github.com/riboseinc/activeid/releases"]
 endif::[]
 
 A modern, performant and database-agnostic solution for storing UUIDs
