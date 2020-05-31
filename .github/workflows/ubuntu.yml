@@ -33,9 +33,9 @@ jobs:
           architecture: 'x64'
       - name: Install mysql and pg
         run: |
-          sudo apt-get update
-          sudo apt-get -y install mariadb-server
-          sudo apt-get -y install postgresql postgresql-contrib
+          # sudo apt-get update
+          sudo apt install -y mariadb-server
+          sudo apt install -y postgresql postgresql-contrib
           mysql -e 'create database activeuuid_test;'
           psql -c 'create database activeuuid_test;' -U postgres
       - name: Update gems
