@@ -1,0 +1,113 @@
+name: Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  rspec:
+    name: >-
+      ${{ matrix.ruby }};
+      ${{ matrix.gemfile }};
+      ${{ matrix.backend }}
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - 2.6
+          - 2.5
+          - 2.4
+          - 2.3
+          - jruby
+        gemfile:
+          - Rails-5_2
+          - Rails-5_1
+          - Rails-5_0
+        backend:
+          - sqlite3
+          - mysql
+          - postgresql
+
+    env:
+      # For Bundler control variables, refer to:
+      # https://bundler.io/v1.17/bundle_config.html
+      BUNDLE_GEMFILE: ${{ format('gemfiles/{0}.gemfile', matrix.gemfile) }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install APT packages
+        run: sudo apt-get install -y libsqlite3-dev
+
+      - name: Use Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Install gems
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      - name: Write database configuration
+        run: |
+          cat <<EOF > spec/support/database.yml
+          sqlite3:
+            adapter: sqlite3
+            database: ":memory:"
+          postgresql:
+            adapter: postgresql
+            host: localhost
+            username: postgres
+            password: verysecret
+            database: activeid_test
+          mysql:
+            adapter: mysql2
+            host: 127.0.0.1
+            port: 3306
+            username: root
+            password: verysecret
+            database: activeid_test
+            encoding: utf8mb4
+          EOF
+
+      - name: Run tests (with monkey patches)
+        run: bundle exec rspec
+        env:
+          DB: ${{ matrix.backend }}
+
+      - name: Run tests (without monkey patches)
+        run: bundle exec rspec
+        env:
+          DB: ${{ matrix.backend }}
+          NO_PATCHES: 1
+
+    services:
+      mariadb:
+        image: mariadb:latest
+        env:
+          MYSQL_ROOT_PASSWORD: verysecret
+          MYSQL_DATABASE: activeid_test
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=7s
+          --health-timeout=5s
+          --health-retries=10
+        ports:
+          - 3306:3306
+
+      postgresql:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: activeid_test
+          POSTGRES_PASSWORD: verysecret
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=7s
+          --health-timeout=5s
+          --health-retries=10
+        ports:
+          - 5432:5432
