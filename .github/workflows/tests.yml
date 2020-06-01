@@ -7,11 +7,14 @@ on:
 jobs:
   rspec:
     name: >-
+      ${{ matrix.allow-failures && '~' }}
       ${{ matrix.ruby }};
       ${{ matrix.gemfile }};
       ${{ matrix.backend }}
 
     runs-on: ubuntu-latest
+
+    continue-on-error: ${{ !! matrix.allow-failures }}
 
     strategy:
       fail-fast: false
@@ -31,6 +34,12 @@ jobs:
           - sqlite3
           - mysql
           - postgresql
+        include:
+          # Allow test failures for some configurations
+          - ruby: 2.3
+            allow-failures: true
+          - ruby: jruby
+            allow-failures: true
 
     env:
       # For Bundler control variables, refer to:
