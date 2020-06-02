@@ -20,7 +20,7 @@ endif::[]
 
 // Links
 :dce_uuids: https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
-:gem_original: https://rubygems.org/gems/activeid
+:gem_original: https://rubygems.org/gems/activeuuid
 :gem_uuidtools: https://github.com/sporkmonger/uuidtools
 :maria_jira_uuid_func: https://jira.mariadb.org/browse/MDEV-15854
 :mit_lic: https://opensource.org/licenses/MIT
@@ -54,7 +54,7 @@ January 2019)…  Most are outdated, all are far from our needs.  Yes,
 {xkcd_comic}[we think we need another one].
 
 NOTE: ActiveID has evolved from a popular, but no longer maintained
-{gem_original}[ActiveID] gem, and its forks.
+{gem_original}[ActiveUUID] gem, and its forks.
 From 2018 the gem was entirely rewritten to support newer Rails releases, and was finally detached as a fork in 2020 to prevent confusion from users. We thank Nate for bringing ActiveID to life!
 
 === Storing UUIDs as binaries in MySQL and SQLite3
