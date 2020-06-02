@@ -24,7 +24,6 @@ jobs:
           - 2.6
           - 2.5
           - 2.4
-          - 2.3
           - jruby
         gemfile:
           - Rails-5_2
@@ -36,8 +35,6 @@ jobs:
           - postgresql
         include:
           # Allow test failures for some configurations
-          - ruby: 2.3
-            allow-failures: true
           - ruby: jruby
             allow-failures: true
 
