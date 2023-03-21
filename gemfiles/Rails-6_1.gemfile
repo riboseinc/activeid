@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gemspec path: "../"
 
-gem "activerecord", "~> 5.1.0"
+gem "activerecord", "~> 6.1.0"
 
 gem "codecov", require: false, group: :test
 gem "simplecov", require: false, group: :test
