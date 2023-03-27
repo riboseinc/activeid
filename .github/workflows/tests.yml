@@ -26,6 +26,9 @@ jobs:
           - 2.4
           - jruby
         gemfile:
+          - Rails-7_0
+          - Rails-6_1
+          - Rails-6_0
           - Rails-5_2
           - Rails-5_1
           - Rails-5_0

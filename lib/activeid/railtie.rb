@@ -1,4 +1,4 @@
-require "active_id"
+require "activeid"
 require "rails"
 
 module ActiveID

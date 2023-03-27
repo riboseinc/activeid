@@ -9,7 +9,7 @@ ENV["DB"] ||= "sqlite3"
 require "bundler/setup"
 Bundler.require :development
 
-require "active_id"
+require "activeid"
 require_relative "../spec/support/0_logger"
 require_relative "../spec/support/1_db_connection"
 
