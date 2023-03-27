@@ -4,7 +4,11 @@
 inherit_from:
   - https://raw.githubusercontent.com/riboseinc/oss-guides/master/ci/rubocop.yml
 
-require: rubocop-rails
+# .rubocop.yml
+
+require:
+  - rubocop-performance
+  - rubocop-rails
 
 AllCops:
   DisplayCopNames: false
