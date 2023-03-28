@@ -81,7 +81,7 @@ jobs:
             username: root
             password: verysecret
             database: activeid_test
-            encoding: utf8mb4
+            encoding: binary
           EOF
 
       - name: Run tests (with monkey patches)
@@ -98,6 +98,7 @@ jobs:
     services:
       mariadb:
         image: mariadb:latest
+        command: --character-set-server=binary --collation-server=binary
         env:
           MYSQL_ROOT_PASSWORD: verysecret
           MYSQL_DATABASE: activeid_test
