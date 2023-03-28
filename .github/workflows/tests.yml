@@ -22,13 +22,12 @@ jobs:
         ruby:
           - 2.7
           - 2.6
-          - 2.5
-          - 2.4
           - jruby
         gemfile:
+          - Rails-7_0
+          - Rails-6_1
+          - Rails-6_0
           - Rails-5_2
-          - Rails-5_1
-          - Rails-5_0
         backend:
           - sqlite3
           - mysql
@@ -37,6 +36,10 @@ jobs:
           # Allow test failures for some configurations
           - ruby: jruby
             allow-failures: true
+        exclude:
+          # Rails 7 depends on ruby 2.7
+          - ruby: 2.6
+            gemfile: Rails-7_0
 
     env:
       # For Bundler control variables, refer to:
@@ -78,7 +81,7 @@ jobs:
             username: root
             password: verysecret
             database: activeid_test
-            encoding: utf8mb4
+            encoding: binary
           EOF
 
       - name: Run tests (with monkey patches)
@@ -98,6 +101,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: verysecret
           MYSQL_DATABASE: activeid_test
+          MARIADB_DEFAULT_CHARACTER_SET: binary
+          MARIADB_DEFAULT_COLLATE: binary
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=7s

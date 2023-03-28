@@ -1,11 +1,12 @@
 require "active_record"
 require "active_support/concern"
+require "active_id/railtie" if defined?(Rails::Railtie)
 
 module ActiveID
   module ConnectionPatches
     module ColumnMethods
       def uuid(*args, **options)
-        args.each { |name| column(name, :uuid, options) }
+        args.each { |name| column(name, :uuid, **options) }
       end
     end
 
