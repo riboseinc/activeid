@@ -98,10 +98,11 @@ jobs:
     services:
       mariadb:
         image: mariadb:latest
-        command: --character-set-server=binary --collation-server=binary
         env:
           MYSQL_ROOT_PASSWORD: verysecret
           MYSQL_DATABASE: activeid_test
+          MARIADB_DEFAULT_CHARACTER_SET: binary
+          MARIADB_DEFAULT_COLLATE: binary
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=7s
